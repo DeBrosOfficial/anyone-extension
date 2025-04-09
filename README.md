@@ -12,7 +12,7 @@ Additionally, the extension features a **dApp Store**, enabling users to access 
 
 ## 
 <p align="center">
-<img src="https://git.debros.io/DeBros/anyone-extension/src/branch/main/images/screenshot.jpg" alt="Alt Text" width="800">
+<img src="https://git.debros.io/DeBros/anyone-extension/raw/branch/main/images/screenshot.jpg" alt="Alt Text" width="800">
 </p>
 
 ## Features
