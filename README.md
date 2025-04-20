@@ -55,7 +55,7 @@ Additionally, the extension features a **dApp Store**, enabling users to access 
 
 - **Default Usage**: When no custom settings are specified, the extension automatically uses public proxy servers, which are contributed and maintained by the ANyONe community.
 - **Update Mechanism**: You can easily refresh the proxy list directly within the extension using an update button.
-- **View Proxies**: To see the current list of community-powered public proxies, visit [https://github.com/DeBrosOfficial/ANyONe-Proxy-List](https://git.debros.io/DeBros/anyone-proxy-list).
+- **View Proxies**: To see the current list of community-powered public proxies, visit [https://git.debros.io/DeBros/anyone-proxy-list](https://git.debros.io/DeBros/anyone-proxy-list).
 
 ### Setting a Custom Proxy
 - Navigate to the options page by clicking the "Custom Settings" button in the popup.
