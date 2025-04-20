@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ANyONe Extension",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Manage Socks5 proxy settings",
   "permissions": [
     "proxy",
