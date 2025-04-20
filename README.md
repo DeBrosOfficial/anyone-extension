@@ -55,7 +55,7 @@ Additionally, the extension features a **dApp Store**, enabling users to access 
 
 - **Default Usage**: When no custom settings are specified, the extension automatically uses public proxy servers, which are contributed and maintained by the ANyONe community.
 - **Update Mechanism**: You can easily refresh the proxy list directly within the extension using an update button.
-- **View Proxies**: To see the current list of community-powered public proxies, visit [https://github.com/DeBrosOfficial/ANyONe-Proxy-List](https://github.com/DeBrosOfficial/ANyONe-Proxy-List).
+- **View Proxies**: To see the current list of community-powered public proxies, visit [https://github.com/DeBrosOfficial/ANyONe-Proxy-List](https://git.debros.io/DeBros/anyone-proxy-list).
 
 ### Setting a Custom Proxy
 - Navigate to the options page by clicking the "Custom Settings" button in the popup.
@@ -77,10 +77,10 @@ You have two options to get the extension on your system:
 
 - **Option A: Clone with Git**
   ```bash
-  git clone "https://github.com/DeBrosOfficial/ANyONe-Extension.git" 
+  git clone "https://git.debros.io/DeBros/anyone-extension.git" 
   ```
 
-- **Option B: [Download ZIP](https://github.com/DeBrosOfficial/ANyONe-Extension/archive/refs/heads/main.zip)**
+- **Option B: [Download ZIP](https://git.debros.io/DeBros/anyone-extension/archive/main.zip)**
 
 ### 2. Load Unpacked Extension in Chromium-based Browser
 - Open your browser and navigate to the extensions page.
