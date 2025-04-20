@@ -71,9 +71,11 @@
 
       #statusMessage {
         margin-top: 30px;
-        font-size: 18px;
-        font-weight: none;
+        font-size: 16px;
+        font-weight: bold;
         min-height: 30px;
+        max-width: 100%;
+        overflow-wrap: break-word;
       }
 
       .button-container-1 {
@@ -176,11 +178,17 @@
         background-position: center;
         margin-top: 10px;
         margin-bottom: 30px;
+        transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out;
+      }
+
+      .social-link:hover {
+        transform: scale(1.2) translateY(-1px); 
+        filter: brightness(1.1); 
       }
 
       .social-link.debros { background-image: url('../images/debroslogo.png'); }
       .social-link.x { background-image: url('../images/x.png'); }
-      .social-link.docs { background-image: url('../images/github.png'); }
+      .social-link.docs { background-image: url('../images/gitbros.png'); }
       .social-link.anyone { background-image: url('../images/anonlogo.png'); }
     </style>
   </head>
@@ -208,7 +216,7 @@
     <div class="footer">
       <a href="https://debros.io" class="social-link debros" target="_blank"></a>
       <a href="https://x.com/debrosofficial" class="social-link x" target="_blank"></a>
-      <a href="https://github.com/DeBrosOfficial/ANyONe-Extension" class="social-link docs" target="_blank"></a>
+      <a href="https://git.debros.io/DeBros/anyone-extension" class="social-link docs" target="_blank"></a>
       <a href="https://anyone.io" class="social-link anyone" target="_blank"></a>
     </div>
 

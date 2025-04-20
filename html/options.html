@@ -3,41 +3,49 @@
   <head>
     <title>Proxy Settings</title>
     <style>
+      * {
+        box-sizing: border-box;
+      }
+
       body {
         font-family: Arial, Helvetica, sans-serif;
-        margin: 0px;
+        margin: 0;
         text-align: center;
         color: #ffffff;
-        width: auto;
         background-image: url('../images/optionsback.png'); 
         background-size: cover;
         background-position: center; 
         background-repeat: no-repeat;
         background-attachment: fixed; 
         min-height: 100vh; 
-        overflow-y: hidden; 
+        overflow-y: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
 
       h1 {
         margin-top: 20px; 
+        white-space: nowrap;
+        font-size: 24px;
       }
 
       .container {
-        max-width: 400px;
-        margin: 50px auto; 
-        padding-top: 10px; 
-        padding-bottom: 1px; 
-        padding-left: 0px;
-        padding-right: 0px;
-        background-color: rgba(0, 0, 0, 0.6); 
-        border-radius: 10px; 
+        width: 400px;
+        margin: 15px auto;
+        padding: 20px;
+        background-color: rgba(0, 0, 0, 0.6);
+        border-radius: 10px;
+        box-sizing: border-box;
+        overflow: hidden;
+        text-align: center;
       }
 
       .form-group {
         display: flex; 
         align-items: center; 
         justify-content: space-between; 
-        margin-bottom: 10px;
+        margin-bottom: 10px; 
       }
 
       label {
@@ -45,24 +53,30 @@
         margin-bottom: 10px;
         margin-top: 20px;
         margin-left: 5px;
-        font-weight: bold;
         white-space: nowrap;
         color: #ecf0f1; 
       }
 
       select, input {
-        width: 130px;
+        width: 170px; 
         padding: 5px;
         margin: 0; 
         border-radius: 5px;
-        border: 1px solid black;
+        border: 1px solid rgb(0, 114, 117);
         font-size: 14px;
-        color: black; 
-        background-color: #ecf0f1;
+        color: #fff;
+        background-color: rgb(10, 18, 30);
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      select:focus, input:focus {
+        outline: none;
+        border-color: #00ced1;
+        box-shadow: 0 0 5px rgba(0, 206, 209, 0.5);
       }
 
       #proxyPort {
-        width: 60px;
+        width: 90px; 
       }
 
       .no-proxy-group {
@@ -70,7 +84,7 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        margin:20px;
+        margin: 10px 0; 
       }
 
       .no-proxy-group label {
@@ -80,59 +94,88 @@
       }
 
       #noProxyFor {
-        width: 75%; 
+        width: 95%; 
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;
         padding: 5px;
         margin: 0 auto;
         border-radius: 5px;
-        border: 1px solid black;
+        border: 1px solid rgb(0, 114, 117);
         font-size: 14px;
-        color: black;
-        background-color: #ecf0f1;
+        color: #fff;
+        background-color: rgb(10, 18, 30);
         display: block;
         max-width: 100%;
       }
 
+      #noProxyFor::placeholder {
+        text-align: center;
+        color: #ccc;
+      }
+
+      #noProxyFor:focus {
+        outline: none;
+        border-color: #00ced1;
+        box-shadow: 0 0 5px rgba(0, 206, 209, 0.5);
+      }
+
       button {
-        padding: 7px 3px;
-        margin: 10px 0px;
-        border: 1px solid black;
+        padding: 7px 10px;
+        margin: 10px 0;
         border-radius: 5px;
-        background-color: #ecf0f1;
-        color: black;
-        font-weight: bold;
+        color: #fff;
         cursor: pointer;
-        transition: background-color 0.3s ease;
-        display: inline-block;
+        background-color: transparent; 
+        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease, filter 0.3s ease;
+        width: 120px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       }
 
       button:hover {
-        background-color: #2ecc71;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
       }
 
-      .container button#disableProxy:hover {
-        background-color: #e74c3c;
+      #saveSettings {
+        border: 1px solid rgb(3, 189, 197);
+        background-color: rgba(3, 189, 197, 0.1); 
       }
 
-      .container button#checkAnyoneButton:hover {
-        background-color: #00ced1;
+      #saveSettings:hover {
+        background-color: rgb(3, 189, 197); 
       }
-    
+
+      #disableProxy {
+        width: 80px;
+        border: 1px solid #a22020;
+        background-color: rgba(162, 32, 32, 0.3); 
+      }
+
+      #disableProxy:hover {
+        background-color: #bf2626; 
+      }
+
+      #checkAnyoneButton {
+        border: 1px solid #0280AF;
+        background-color: rgba(2, 128, 175, 0.1); 
+      }
+
+      #checkAnyoneButton:hover {
+        background-color: #0280AF; 
+        filter: brightness(1.2); 
+      }
+
       .container .button-group {
         display: flex;
         justify-content: center; 
         gap: 10px;
-        margin-top: 10px; 
-      }
-      .container .button-group button {
-        display: inline-block; 
+        margin-top: 15px; 
       }
 
       .credits {
-        margin-top: 10px;
-        margin-bottom: 20px;
+        margin-top: 15px;
+        margin-bottom: 10px;
         display: flex;
         flex-direction: column; 
         align-items: center; 
@@ -155,7 +198,6 @@
 
       .credits-link span {
         font-size: 14px;
-        font-weight: bold;
         transition: color 0.1s ease;
       }
 
@@ -169,21 +211,58 @@
       }
 
       #anonLogo {
-        margin: 20px auto 10px;
+        margin: 10px auto 10px;
         display: block;
       }
 
       #statusMessage {
-        height: 40px; 
-        margin: 10px 0; 
-        text-align: center;
-        padding: 0 20px;
+        min-height: 40px;
+        margin: 10px auto;
+        padding: 0 10px;
+        max-width: calc(100% - 20px);
+        width: 100%;
+        text-align: center !important;
+        white-space: normal !important;
+        word-wrap: break-word !important;
+        word-break: break-all !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+        font-family: Arial, sans-serif !important;
+        font-size: 14px;
+        font-weight: bold !important;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      @media (min-width: 1200px) {
+      
+        .form-group, .no-proxy-group {
+          margin-bottom: 10px;
+        }
+
+        .button-group {
+          gap: 15px;
+        }
+
+        button {
+          width: 120px;
+        }
+
+        #disableProxy {
+          width: 80px;
+        }
       }
 
       @media (max-width: 600px) {
         .container {
           width: 90%;
-          margin: 0 auto;
+          padding: 15px;
+          margin: 10px auto;
+        }
+
+        #statusMessage {
+          font-size: 12px; 
         }
 
         select, input, button {
@@ -194,47 +273,58 @@
           flex-direction: column;
           align-items: flex-start;
         }
+
         label {
           margin-bottom: 5px;
         }
+
         .button-group {
           flex-direction: row; 
+          flex-wrap: wrap;
+          gap: 8px;
         }
+
         .credits {
           align-items: flex-start; 
         }
+
         .no-proxy-group label {
           width: 100%;
-         }
-         #noProxyFor {
-            width: 100%;
+        }
+
+        #noProxyFor {
+          width: 100%;
+        }
+
+        h1 {
+          font-size: 20px;
         }
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <img src="../images/anonlogo.png" alt="AnON Logo" width="120" height="120" id="anonLogo">
+      <img src="../images/anonlogo.png" alt="Anon Logo" width="120" height="120" id="anonLogo">
       <h1>My Socks5 Proxy Settings</h1>
       <label for="proxyIP">
         Host
-        <input type="text" id="proxyIP" placeholder="enter host">
+        <input type="text" id="proxyIP" placeholder="enter host" aria-label="Proxy Host">
       </label>
 
       <label for="proxyPort">
         Port
-        <input type="number" id="proxyPort" placeholder="port">
+        <input type="number" id="proxyPort" placeholder="port" aria-label="Proxy Port">
       </label>
 
       <div class="no-proxy-group">
         <label for="noProxyFor">No Proxy for</label>
-        <input type="text" id="noProxyFor" placeholder="e.g., localhost, *.example.com" name="noProxyFor">
+        <input type="text" id="noProxyFor" placeholder="e.g., localhost, *.example.com" name="noProxyFor" aria-label="No Proxy For">
       </div>
 
       <div class="button-group">
         <button id="saveSettings">Save & Enable</button>
         <button id="disableProxy">Disable</button> 
-        <button id="checkAnyoneButton">Check ANyONe</button> 
+        <button id="checkAnyoneButton">Check ANyONe</button>
       </div>
       <p id="statusMessage"></p>
 
@@ -243,7 +333,7 @@
           <img src="../images/debroslogo.png" alt="DeBros Logo" width="30" height="30">
           <span>This extension was created by DeBros</span>          
         </a>
-        <a href="https://github.com/DeBrosOfficial/ANyONe-Extension" target="_blank" rel="noopener noreferrer" class="credits-link" aria-label="Explore the open source code and documentation">
+        <a href="https://git.debros.io/DeBros/anyone-extension" target="_blank" rel="noopener noreferrer" class="credits-link" aria-label="Explore the open source code and documentation">
           <span>It's open source - explore the code and docs here</span>
         </a>
       </div>
