@@ -97,16 +97,10 @@ function applyProxySettings(host, port, exceptions = []) {
     if (chrome.runtime.lastError) {
       statusMessage.textContent = "Error applying proxy: " + chrome.runtime.lastError.message;
       statusMessage.style.color = "red";
-      statusMessage.style.fontSize = "14px";
-      statusMessage.style.fontFamily = "Arial";
-      statusMessage.style.fontWeight = "bold";
     } else {
       console.log(`Proxy applied: ${host}:${port}`);
       statusMessage.textContent = `Proxy applied: ${host}:${port}`;
       statusMessage.style.color = "#2ecc71";
-      statusMessage.style.fontSize = "16px";
-      statusMessage.style.fontFamily = "Arial";
-      statusMessage.style.fontWeight = "bold";
       clearStatusMessage();
     }
   });
@@ -128,25 +122,17 @@ saveSettings.addEventListener("click", () => {
   if (!isValidIP(proxyIP.value)) {
     statusMessage.textContent = "Invalid IP address.";
     statusMessage.style.color = "red";
-    statusMessage.style.fontSize = "16px";
-    statusMessage.style.fontFamily = "Arial";
-    statusMessage.style.fontWeight = "bold";
     return;
   }
   if (!isValidPort(proxyPort.value)) {
     statusMessage.textContent = "Invalid port number. Must be between 1 and 65535.";
     statusMessage.style.color = "red";
-    statusMessage.style.fontSize = "14px";
-    statusMessage.style.fontFamily = "Arial";
-    statusMessage.style.fontWeight = "bold";
     return;
   }
 
   statusMessage.textContent = "Please wait...";
   statusMessage.style.color = "#f39c12";
-  statusMessage.style.fontSize = "16px";
-  statusMessage.style.fontFamily = "Arial";
-  statusMessage.style.fontWeight = "bold";
+
 
   // Disable the saveSettings button
   saveSettings.disabled = true;
@@ -167,15 +153,9 @@ saveSettings.addEventListener("click", () => {
         if (chrome.runtime.lastError) {
           statusMessage.textContent = "Error saving settings: " + chrome.runtime.lastError.message;
           statusMessage.style.color = "red";
-          statusMessage.style.fontSize = "14px";
-          statusMessage.style.fontFamily = "Arial";
-          statusMessage.style.fontWeight = "bold";
         } else {
           statusMessage.textContent = "Proxy settings saved and connection verified!";
           statusMessage.style.color = "#2ecc71";
-          statusMessage.style.fontSize = "16px";
-          statusMessage.style.fontFamily = "Arial";
-          statusMessage.style.fontWeight = "bold";
           applyProxySettings(proxyIP.value, proxyPort.value, filteredExceptions);
           
           // Send response to the message sender
@@ -193,9 +173,6 @@ saveSettings.addEventListener("click", () => {
     .catch((error) => {
       statusMessage.textContent = `Proxy connection failed: ${error}. Settings not applied.`;
       statusMessage.style.color = "red";
-      statusMessage.style.fontSize = "14px";
-      statusMessage.style.fontFamily = "Arial";
-      statusMessage.style.fontWeight = "bold";
       chrome.proxy.settings.clear({});
 
       // Send a message indicating proxy setup failed
@@ -220,15 +197,9 @@ disableProxy.addEventListener("click", () => {
     if (chrome.runtime.lastError) {
       statusMessage.textContent = "Error disabling proxy: " + chrome.runtime.lastError.message;
       statusMessage.style.color = "red";
-      statusMessage.style.fontSize = "14px";
-      statusMessage.style.fontFamily = "Arial";
-      statusMessage.style.fontWeight = "bold";
     } else {
       statusMessage.textContent = "Proxy has been disabled!";
       statusMessage.style.color = "#e74c3c";
-      statusMessage.style.fontSize = "16px";
-      statusMessage.style.fontFamily = "Arial";
-      statusMessage.style.fontWeight = "bold";
       clearStatusMessage();
       console.log("Proxy settings disabled.");
       chrome.storage.local.get(["noProxyFor"], (result) => {

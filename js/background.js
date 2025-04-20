@@ -132,7 +132,7 @@ function enableFirstWorkingProxy(callback) {
 
 function fetchProxies() {
   console.log("Starting to fetch proxies...");
-  return fetch('https://raw.githubusercontent.com/DeBrosOfficial/ANyONe-Proxy-List/main/anonproxies.json') // list of public proxies
+  return fetch('https://git.debros.io/DeBros/anyone-proxy-list/raw/branch/main/anonproxies.json') // list of public proxies
     .then(response => {
       console.log("Response status:", response.status);
       if (!response.ok) {

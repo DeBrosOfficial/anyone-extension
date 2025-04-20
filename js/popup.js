@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const proxyType = data.proxyType || "public";
       const currentProxy = proxyType === "custom" 
         ? { host: data.proxyIP || "127.0.0.1", port: data.proxyPort || 9050 } 
-        : (data.currentProxy || { host: "51.75.175.24", port: 9052 }); // Default public Proxy
+        : (data.currentProxy || { host: "82.208.21.140", port: 9052 }); // Default public Proxy
 
       updateUI(isEnabled, proxyType, currentProxy);
     });
