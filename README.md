@@ -1,181 +1,165 @@
-# ANyONe Extension - Manage Socks5 Proxy Settings
+# ANyONe Extension v2.0
 
-## Overview
-**The ANyONe Proxy Extension** is a powerful Chromium-based browser extension designed to help users manage and switch between different proxy settings effortlessly. It offers:
-
-- **Quick access** through the browser's toolbar.
-- **Detailed control** via an options page.
-
-Additionally, the extension features a **dApp Store**, enabling users to access decentralized applications directly from the extension. **This tool also simplifies access to the Socks5 Proxy of your official ANyONe router.** Created by DeBros, it is a community-driven project and **not an official ANyONe product**.
-
-**Note:** It's recommended to leverage local Socks5 Proxies within our internal network for optimal security and performance. Always confirm you are within the ANyONe network by pressing the 'Check ANyONe' button.
-
-## 
-<p align="center">
-<img src="https://git.debros.io/DeBros/anyone-extension/raw/branch/main/images/screenshot.png" alt="Alt Text" width="800">
-</p>
+A privacy-focused Chromium browser extension for managing SOCKS5 proxy connections to the ANyONe network.
 
 ## Features
 
-### 1. Quick Proxy Toggle
-- **Enable/Disable Proxy**: A toggle switch in the popup allows users to quickly turn the proxy on or off.
-- **Public Proxies**: 
-  - **Default Activation**: Automatically uses community-contributed public proxy servers when no custom settings are applied.
-  - **Dynamic List**: Easily update the proxy list with a dedicated button within the extension.
+### Connection Modes
 
-### 2. Custom Proxy Settings via Options Page
+#### Public Proxies Mode
+- **One-click connect** to community-powered ANyONe proxy servers
+- **Auto-selection** of the fastest available proxy
+- **Load balancing** with "Next Proxy" button to switch servers
+- **Multiple sources**: Arweave, GitBros, or GitHub
+- **Automatic fallback**: If one source fails, tries the next automatically
 
-- **Access Custom Settings**: Users can configure custom proxies by navigating to the options page.
-- **Host and Port**: Specify the host IP and port number for your custom proxy.
-- **No Proxy Exceptions**: Define specific websites or local addresses where the proxy should not be applied.
-- **Detailed Configuration**: The options page allows for:
-  - Setting up custom proxy configurations.
-  - Managing exceptions to proxy use.
-  - Saving and applying changes for a tailored browsing experience.
+#### Custom Proxy Mode
+- **Full SOCKS5 configuration** with IP/hostname and port
+- **Authentication support** for proxies requiring username/password
+- **Test connection** before connecting
 
-### 3. Proxy Status Indication
-- **Status Messages**: The extension provides clear feedback on the current proxy status both in the popup and options page, including:
-  - Whether a proxy is enabled or disabled.
-  - The type of proxy in use (public or custom).
-  - The specific host and port being routed through.
+### Privacy & Security
 
-### 4. External Links
-- **Check ANyONe**: A button to directly check the external IP and proxy status via the ANyONe service.
-- **Credits**: Links to the developer's website and the GitHub repository for the extension.
-- **Popup**: Links to the developer's website, X account, GitHub repository for the extension, and ANyONe website.
+| Feature | Description |
+|---------|-------------|
+| **WebRTC Leak Protection** | Prevents real IP leaks through WebRTC |
+| **Kill Switch** | Blocks all traffic if proxy connection drops unexpectedly |
+| **Local Network Access** | Toggle to allow/block access to local devices (printers, NAS, routers) while connected |
+| **Bypass List** | Domains and IPs that skip the proxy
 
-## Usage
+### Settings & Customization
 
-### Enabling/Disabling Proxy
-- Click the extension icon to open the popup.
-- Use the toggle switch to enable or disable the proxy. 
-- The status message will update to reflect the current state.
+- **Auto-connect on startup** - Automatically connect when browser starts
+- **Default connection mode** - Choose Public or Custom as default
+- **Proxy source selection** - Arweave (default), GitBros, or GitHub with automatic fallback
+- **Update interval** - Manual, hourly, or periodic auto-updates of proxy list
 
-### Public Proxies:
+### User Interface
 
-- **Default Usage**: When no custom settings are specified, the extension automatically uses public proxy servers, which are contributed and maintained by the ANyONe community.
-- **Update Mechanism**: You can easily refresh the proxy list directly within the extension using an update button.
-- **View Proxies**: To see the current list of community-powered public proxies, visit [https://git.debros.io/DeBros/anyone-proxy-list](https://git.debros.io/DeBros/anyone-proxy-list).
-
-### Setting a Custom Proxy
-- Navigate to the options page by clicking the "Custom Settings" button in the popup.
-- Enter the Host IP and Port for your custom proxy.
-- Optionally, specify IP addresses or domains that should bypass the proxy in the "No Proxy for" field.
-- Click "Save & Enable" to apply your settings.
-
-### Disabling the Proxy
-- From the options page, click "Disable" to turn off the proxy settings, or from the popup, turn the toggle off.
-
-### Accessing the dApp Store
-- Click the "dApp Store" button in the popup to open the dApp Store page.
-- The dApp Store page will display available decentralized applications.
+- **Modern dark theme** with clean, intuitive design
+- **Real-time status** showing connection state and current proxy
+- **Quick actions** - Check IP, refresh proxies, access settings
+- **Toast notifications** for instant feedback
 
 ## Installation
 
-### 1. Clone or Download the Repository
-You have two options to get the extension on your system:
+### Option 1: Clone with Git
+```bash
+git clone "https://git.debros.io/DeBros/anyone-extension.git"
+```
 
-- **Option A: Clone with Git**
-  ```bash
-  git clone "https://git.debros.io/DeBros/anyone-extension.git" 
-  ```
+### Option 2: Download ZIP
+[Download ZIP](https://git.debros.io/DeBros/anyone-extension/archive/main.zip)
 
-- **Option B: [Download ZIP](https://git.debros.io/DeBros/anyone-extension/archive/main.zip)**
+### Load in Browser
+1. Open your Chromium-based browser (Chrome, Brave, Edge, etc.)
+2. Navigate to `chrome://extensions/`
+3. Enable **Developer mode** (toggle in top right)
+4. Click **Load unpacked**
+5. Select the extension folder containing `manifest.json`
 
-### 2. Load Unpacked Extension in Chromium-based Browser
-- Open your browser and navigate to the extensions page.
-- Enable "Developer mode".
-- Depending on your method in step 1:
-  - If you cloned the repository, click "Load unpacked" and select the cloned directory containing the `manifest.json` file.
-  - If you downloaded and unpacked, drag and drop the unpacked folder into the extensions window.
- 
-## Contribution
-Contributions are welcome! Please fork the repository and submit pull requests for any enhancements or bug fixes.
+## Usage
 
-For questions or further discussion, reach out to us on <a href="https://t.me/debrosportal" target="_blank">Telegram</a>
- 
----
+### Quick Start
+1. Click the extension icon in your browser toolbar
+2. Choose **Public** or **Custom** mode
+3. Click the **Connect** button
 
-# Optional: Enhancing Security with Custom DNS Configuration
+### Public Proxies
+- Automatically fetches and connects to community proxies
+- Use **Next Proxy** to switch to a different server
+- Click **Refresh** to update the proxy list
 
-Manually configuring your network's DNS can significantly boost your online privacy and security. Below, you'll find a selection of well-regarded, secure DNS servers that provide enhanced protection and privacy features:
+### Custom Proxy
+1. Enter your SOCKS5 proxy IP/hostname and port
+2. (Settings/Optional) Add username and password for authentication
+3. (Settings/Optional) Configure bypass list for specific domains
+4. Click **Test Connection** to verify, then **Connect**
 
-## Cloudflare DNS (1.1.1.1)
+### Check Your Connection
+Click **Check IP** to verify your connection is routed through the ANyONe network.
 
-- **IPv4**: 1.1.1.1 and 1.0.0.1
-- **IPv6**: 2606:4700:4700::1111 and 2606:4700:4700::1001
-- **Features**: Fast performance, does not log DNS queries, supports DNS over HTTPS (DoH) and DNS over TLS (DoT).
-- **Website**: [https://1.1.1.1/dns](https://1.1.1.1/dns)
+## Proxy Sources
 
-## Quad9 (9.9.9.9)
+The extension fetches proxy lists from multiple sources with automatic fallback:
 
-- **IPv4**: 9.9.9.9 and 149.112.112.112
-- **IPv6**: 2620:fe::9 and 2620:fe::fe:9
-- **Features**: Offers protection against malware and phishing, privacy with no logging of DNS queries. Supports DoT.
-- **Website**: [https://quad9.net](https://quad9.net)
+| Source | URL | Type |
+|--------|-----|------|
+| **Arweave** (Default) | [arweave.net/FjxfWIbS...](https://arweave.net/FjxfWIbSnZb7EaJWbeuWCsBBFWjTppfS3_KHxUP__B8) | Decentralized, permanent |
+| **GitBros** | [git.debros.io/DeBros/anyone-proxy-list](https://git.debros.io/DeBros/anyone-proxy-list) | Self-hosted Git |
+| **GitHub** | [github.com/DeBrosOfficial/anyone-proxy-list](https://github.com/DeBrosOfficial/anyone-proxy-list) | Centralized backup |
 
-## Mullvad DNS
+**Fallback order:** Arweave → GitBros → GitHub
 
-- **IPv4**: 194.242.2.1 and 194.242.2.2
-- **IPv6**: 2a07:e340::1 and 2a07:e340::2
-- **Features**: Complete privacy with no logging, supports DoH and DoT. Ideal for users concerned with anonymity.
-- **Website**: [https://mullvad.net/en](https://mullvad.net/en)
+## Privacy Settings Explained
 
-## AdGuard DNS
+### WebRTC Leak Protection
+WebRTC can expose your real IP even when using a proxy. Enable this to prevent leaks.
 
-- **IPv4**: 94.140.14.14 and 94.140.15.15 (without filters), 176.103.130.130 and 176.103.130.131 (with filters)
-- **IPv6**: 2a10:50c0::ad1:ff and 2a10:50c0::ad2:ff (without filters), 2a10:50c0::bad1:ff and 2a10:50c0::bad2:ff (with filters)
-- **Features**: Provides protection against ads, trackers, and phishing, as well as privacy with no logging.
-- **Website**: [https://adguard-dns.io](https://adguard-dns.io)
+### Kill Switch
+When enabled, if your proxy connection drops unexpectedly, all internet traffic will be blocked until you reconnect or disable the kill switch. This prevents accidental exposure of your real IP.
 
-## How to Configure:
+### Local Network Access
+- **Enabled (default)**: Access local devices (192.168.x.x, 10.x.x.x, .local domains) directly
+- **Disabled**: All traffic goes through proxy, local devices unreachable
 
-- **For Windows**: Go to "Settings" > "Network & Internet" > "Change adapter options", right-click on your connection, select "Properties", then select "Internet Protocol Version 4 (TCP/IPv4)" or "Internet Protocol Version 6 (TCP/IPv6)" and enter the DNS addresses you want.
-- **For macOS**: Navigate to "System Preferences" > "Network", select your connection, click on the "Advanced" button, go to the "DNS" tab, and add your DNS addresses.
-- **For Linux**: Depending on the distribution, you can usually modify the `/etc/resolv.conf` file to add DNS addresses.
-- **For Routers**: You'll typically find DNS settings in the advanced settings of your router. This will change the DNS for all devices connected to the network.
+## Technical Details
 
----
+- **Manifest V3** compliant
+- **SOCKS5** proxy protocol
+- **Chrome Proxy API** for system-level proxy configuration
+- **Chrome Privacy API** for WebRTC protection
 
-# ANyONe Protocol: Connection and Setup Guide
+## Contributing
 
-**About ANyONe Protocol**: ANyONe is a decentralized network protocol focused on providing privacy, security, and freedom on the internet. Whether you're looking to browse anonymously or secure your online communications, ANyONe offers versatile solutions for different needs.
+Contributions are welcome! Please fork the repository and submit pull requests.
 
-Explore multiple ways to interact with the ANyONe, whether you're connecting directly from your OS, setting up your own relay for personalized control, or using dedicated hardware for an optimized experience. Here's your guide:
-
-- **Linux**: Enjoy a seamless one-click setup. Learn more in the [Linux Connection Guide](https://docs.anyone.io/connect/connecting-to-linux).
-- **macOS**: Connect easily with or without npm. Check the [macOS Connection Guide](https://docs.anyone.io/connect/connecting-to-macos).
-- **Windows**: Benefit from a straightforward one-click setup. See the [Windows Connection Guide](https://docs.anyone.io/connect/connecting-to-windows).
-
-**Setting Up Your Own Relay**: For those interested in customizing your network participation or contributing to the ANyONe ecosystem, follow the [Relay Setup Guide](https://docs.anyone.io/relay).
-
-**Dedicated Hardware**: For a user-friendly, plug-and-play experience, ANyONe offers specialized hardware like the Anyone Router. This hardware is designed for non-technical users to contribute to and use the network seamlessly, offering:
-
-  - **Ease of Use**: Power on, connect to Wi-Fi or Ethernet, and earn tokens for contributing your bandwidth.
-  - **Security**: Includes custom components like encryption chips similar to those in hardware wallets.
-  - **Diversity**: Enhances network coverage across various ISPs and introduces more independent operators.
-
-  Check out the [Hardware Setup Guide](https://docs.anyone.io/hardware) or visit [Anyone Hardware](https://www.anyone.io/hardware) to learn more and pre-order.
+For questions or discussion, join us on [Telegram](https://t.me/debrosportal).
 
 ---
 
-###
+## Optional: Secure DNS Configuration
 
-<br clear="both">
+Enhance your privacy by using secure DNS servers:
+
+### Recommended DNS Providers
+
+| Provider | IPv4 | Features |
+|----------|------|----------|
+| **Cloudflare** | 1.1.1.1, 1.0.0.1 | Fast, no logging, DoH/DoT |
+| **Quad9** | 9.9.9.9, 149.112.112.112 | Malware protection, no logging |
+| **Mullvad** | 194.242.2.2 | Full privacy, no logging |
+| **AdGuard** | 94.140.14.14, 94.140.15.15 | Ad blocking, no logging |
+
+---
+
+## ANyONe Protocol Resources
+
+- [Linux Connection Guide](https://docs.anyone.io/connect/connecting-to-linux)
+- [macOS Connection Guide](https://docs.anyone.io/connect/connecting-to-macos)
+- [Windows Connection Guide](https://docs.anyone.io/connect/connecting-to-windows)
+- [Relay Setup Guide](https://docs.anyone.io/relay)
+- [Hardware Setup Guide](https://docs.anyone.io/hardware)
+
+---
 
 <div align="center">
-  <a href="https://linktr.ee/debrosofficial" target="_blank">
-    <img src="https://img.shields.io/static/v1?message=Linktree&logo=linktree&label=&color=1de9b6&logoColor=white&labelColor=&style=for-the-badge" height="35" alt="linktree logo" />
-  </a>
-  <a href="https://x.com/debrosofficial" target="_blank">
-    <img src="https://img.shields.io/static/v1?message=Twitter&logo=twitter&label=&color=1DA1F2&logoColor=white&labelColor=&style=for-the-badge" height="35" alt="twitter logo" />
-  </a>
-  <a href="https://t.me/debrosportal" target="_blank">
-    <img src="https://img.shields.io/static/v1?message=Telegram&logo=telegram&label=&color=2CA5E0&logoColor=white&labelColor=&style=for-the-badge" height="35" alt="telegram logo" />
-  </a>
-  <a href="https://www.youtube.com/@DeBrosOfficial" target="_blank">
-    <img src="https://img.shields.io/static/v1?message=Youtube&logo=youtube&label=&color=FF0000&logoColor=white&labelColor=&style=for-the-badge" height="35" alt="youtube logo" />
-  </a>
-</div>
 
-###
+**Created by [DeBros](https://debros.io)** | **Version 2.0.0**
+
+[![Support DeBros](https://img.shields.io/badge/Support-DeBros-cyan?style=for-the-badge)](https://debros.io/donate)
+
+<a href="https://linktr.ee/debrosofficial" target="_blank">
+  <img src="https://img.shields.io/static/v1?message=Linktree&logo=linktree&label=&color=1de9b6&logoColor=white&labelColor=&style=for-the-badge" height="35" alt="linktree logo" />
+</a>
+<a href="https://x.com/debrosofficial" target="_blank">
+  <img src="https://img.shields.io/static/v1?message=Twitter&logo=twitter&label=&color=1DA1F2&logoColor=white&labelColor=&style=for-the-badge" height="35" alt="twitter logo" />
+</a>
+<a href="https://t.me/debrosportal" target="_blank">
+  <img src="https://img.shields.io/static/v1?message=Telegram&logo=telegram&label=&color=2CA5E0&logoColor=white&labelColor=&style=for-the-badge" height="35" alt="telegram logo" />
+</a>
+<a href="https://www.youtube.com/@DeBrosOfficial" target="_blank">
+  <img src="https://img.shields.io/static/v1?message=Youtube&logo=youtube&label=&color=FF0000&logoColor=white&labelColor=&style=for-the-badge" height="35" alt="youtube logo" />
+</a>
+
+</div>

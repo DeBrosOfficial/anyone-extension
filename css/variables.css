@@ -1,0 +1,98 @@
+/* ANyONe Extension v2 - Design System */
+
+:root {
+  /* Colors - Primary (ANyONe Teal/Cyan) */
+  --color-primary: #03BDC5;
+  --color-primary-light: #2DD4DB;
+  --color-primary-dark: #0A9BA2;
+
+  /* Colors - Secondary (ANyONe Deep Teal) */
+  --color-secondary: #0D6B7C;
+  --color-secondary-light: #1A8A9C;
+  --color-secondary-dark: #084B56;
+
+  /* Colors - Accent (ANyONe Blue) */
+  --color-accent: #0280AF;
+  --color-accent-light: #0A9FD4;
+  --color-accent-dark: #065A7A;
+
+  /* Colors - Background (Dark Theme) */
+  --color-bg-primary: #0A1218;
+  --color-bg-secondary: #0F1A22;
+  --color-bg-tertiary: #152530;
+  --color-bg-hover: #1C3040;
+
+  /* Colors - Text */
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #B0C4CC;
+  --color-text-muted: #6B8A95;
+
+  /* Colors - Status */
+  --color-success: #02AF50;
+  --color-warning: #F39C12;
+  --color-error: #E74C3C;
+  --color-info: #0280AF;
+
+  /* Colors - Border */
+  --color-border: #1E3A47;
+  --color-border-light: #2A4A58;
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+  --spacing-2xl: 32px;
+
+  /* Border Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* Typography */
+  --font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-size-xs: 10px;
+  --font-size-sm: 12px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 20px rgba(3, 189, 197, 0.4);
+  --shadow-glow-success: 0 0 20px rgba(2, 175, 80, 0.4);
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 350ms ease;
+
+  /* Z-index */
+  --z-dropdown: 100;
+  --z-modal: 200;
+  --z-tooltip: 300;
+}
+
+/* Light theme option */
+[data-theme="light"] {
+  --color-bg-primary: #F0F5F7;
+  --color-bg-secondary: #FFFFFF;
+  --color-bg-tertiary: #E5EDEF;
+  --color-bg-hover: #D5E0E5;
+  --color-text-primary: #0A1218;
+  --color-text-secondary: #3A5A68;
+  --color-text-muted: #6B8A95;
+  --color-border: #C5D5DC;
+  --color-border-light: #D5E0E5;
+}
