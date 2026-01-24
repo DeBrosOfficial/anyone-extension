@@ -1,342 +1,323 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Proxy Settings</title>
-    <style>
-      * {
-        box-sizing: border-box;
-      }
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ANyONe Extension Settings</title>
+  <link rel="stylesheet" href="../css/options.css">
+</head>
+<body>
+  <div class="options-container">
+    <!-- Header -->
+    <header class="options-header">
+      <img src="../images/anonlogo.png" alt="ANyONe" class="header-logo-img">
+      <h1 class="options-title">Extension Settings</h1>
+    </header>
 
-      body {
-        font-family: Arial, Helvetica, sans-serif;
-        margin: 0;
-        text-align: center;
-        color: #ffffff;
-        background-image: url('../images/optionsback.png'); 
-        background-size: cover;
-        background-position: center; 
-        background-repeat: no-repeat;
-        background-attachment: fixed; 
-        min-height: 100vh; 
-        overflow-y: hidden;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
+    <!-- General Settings -->
+    <section class="settings-section">
+      <div class="section-title">General</div>
+      <div class="settings-card">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Auto-connect on startup</div>
+            <div class="setting-desc">Automatically connect when browser starts</div>
+          </div>
+          <div class="setting-control">
+            <label class="toggle">
+              <input type="checkbox" id="auto-connect">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
 
-      h1 {
-        margin-top: 20px; 
-        white-space: nowrap;
-        font-size: 24px;
-      }
-
-      .container {
-        width: 400px;
-        margin: 15px auto;
-        padding: 20px;
-        background-color: rgba(0, 0, 0, 0.6);
-        border-radius: 10px;
-        box-sizing: border-box;
-        overflow: hidden;
-        text-align: center;
-      }
-
-      .form-group {
-        display: flex; 
-        align-items: center; 
-        justify-content: space-between; 
-        margin-bottom: 10px; 
-      }
-
-      label {
-        display: inline-block;
-        margin-bottom: 10px;
-        margin-top: 20px;
-        margin-left: 5px;
-        white-space: nowrap;
-        color: #ecf0f1; 
-      }
-
-      select, input {
-        width: 170px; 
-        padding: 5px;
-        margin: 0; 
-        border-radius: 5px;
-        border: 1px solid rgb(0, 114, 117);
-        font-size: 14px;
-        color: #fff;
-        background-color: rgb(10, 18, 30);
-        transition: border-color 0.3s ease, box-shadow 0.3s ease;
-      }
-
-      select:focus, input:focus {
-        outline: none;
-        border-color: #00ced1;
-        box-shadow: 0 0 5px rgba(0, 206, 209, 0.5);
-      }
-
-      #proxyPort {
-        width: 90px; 
-      }
-
-      .no-proxy-group {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        margin: 10px 0; 
-      }
-
-      .no-proxy-group label {
-        margin-bottom: 0; 
-        margin-top: 0; 
-        margin-right: 2px; 
-      }
-
-      #noProxyFor {
-        width: 95%; 
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
-        padding: 5px;
-        margin: 0 auto;
-        border-radius: 5px;
-        border: 1px solid rgb(0, 114, 117);
-        font-size: 14px;
-        color: #fff;
-        background-color: rgb(10, 18, 30);
-        display: block;
-        max-width: 100%;
-      }
-
-      #noProxyFor::placeholder {
-        text-align: center;
-      }
-
-      #noProxyFor:focus {
-        outline: none;
-        border-color: #00ced1;
-        box-shadow: 0 0 5px rgba(0, 206, 209, 0.5);
-      }
-
-      button {
-        padding: 7px 10px;
-        margin: 10px 0;
-        border-radius: 5px;
-        color: #fff;
-        cursor: pointer;
-        background-color: transparent; 
-        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease, filter 0.3s ease;
-        width: 120px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-      }
-
-      button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      #saveSettings {
-        border: 1px solid rgb(3, 189, 197);
-        background-color: rgba(3, 189, 197, 0.1); 
-      }
-
-      #saveSettings:hover {
-        background-color: rgb(3, 189, 197); 
-      }
-
-      #disableProxy {
-        width: 80px;
-        border: 1px solid #a22020;
-        background-color: rgba(162, 32, 32, 0.3); 
-      }
-
-      #disableProxy:hover {
-        background-color: #bf2626; 
-      }
-
-      #checkAnyoneButton {
-        border: 1px solid #0280AF;
-        background-color: rgba(2, 128, 175, 0.1); 
-      }
-
-      #checkAnyoneButton:hover {
-        background-color: #0280AF; 
-        filter: brightness(1.2); 
-      }
-
-      .container .button-group {
-        display: flex;
-        justify-content: center; 
-        gap: 10px;
-        margin-top: 15px; 
-      }
-
-      .credits {
-        margin-top: 15px;
-        margin-bottom: 10px;
-        display: flex;
-        flex-direction: column; 
-        align-items: center; 
-      }
-
-      .credits-link {
-        text-decoration: none;
-        color: inherit;
-        display: flex;
-        align-items: center;
-        margin-bottom: 10px; 
-        transition: all 0.3s ease;
-      }
-
-      .credits-link:hover {
-        opacity: 0.8;
-        transform: translateY(-2px);
-        color: #2ecc71;
-      }
-
-      .credits-link span {
-        font-size: 14px;
-        transition: color 0.1s ease;
-      }
-
-      .credits img {
-        margin-right: 10px;
-        transition: transform 0.3s ease;
-      }
-
-      .credits-link:hover img {
-        transform: scale(1.1);
-      }
-
-      #anonLogo {
-        margin: 10px auto 10px;
-        display: block;
-      }
-
-      #statusMessage {
-        min-height: 40px;
-        margin: 10px auto;
-        padding: 0 10px;
-        max-width: calc(100% - 20px);
-        width: 100%;
-        text-align: center !important;
-        white-space: normal !important;
-        word-wrap: break-word !important;
-        word-break: break-all !important;
-        overflow: hidden !important;
-        box-sizing: border-box !important;
-        font-family: Arial, sans-serif !important;
-        font-size: 14px;
-        font-weight: bold !important;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-
-      @media (min-width: 1200px) {
-      
-        .form-group, .no-proxy-group {
-          margin-bottom: 10px;
-        }
-
-        .button-group {
-          gap: 15px;
-        }
-
-        button {
-          width: 120px;
-        }
-
-        #disableProxy {
-          width: 80px;
-        }
-      }
-
-      @media (max-width: 600px) {
-        .container {
-          width: 90%;
-          padding: 15px;
-          margin: 10px auto;
-        }
-
-        #statusMessage {
-          font-size: 12px; 
-        }
-
-        select, input, button {
-          width: 100%;
-        }
-
-        .form-group {
-          flex-direction: column;
-          align-items: flex-start;
-        }
-
-        label {
-          margin-bottom: 5px;
-        }
-
-        .button-group {
-          flex-direction: row; 
-          flex-wrap: wrap;
-          gap: 8px;
-        }
-
-        .credits {
-          align-items: flex-start; 
-        }
-
-        .no-proxy-group label {
-          width: 100%;
-        }
-
-        #noProxyFor {
-          width: 100%;
-        }
-
-        h1 {
-          font-size: 20px;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <img src="../images/anonlogo.png" alt="Anon Logo" width="120" height="120" id="anonLogo">
-      <h1>My Socks5 Proxy Settings</h1>
-      <label for="proxyIP">
-        Host
-        <input type="text" id="proxyIP" placeholder="enter host" aria-label="Proxy Host">
-      </label>
-
-      <label for="proxyPort">
-        Port
-        <input type="number" id="proxyPort" placeholder="port" aria-label="Proxy Port">
-      </label>
-
-      <div class="no-proxy-group">
-        <label for="noProxyFor">No Proxy for</label>
-        <input type="text" id="noProxyFor" placeholder="e.g., localhost, *.example.com" name="noProxyFor" aria-label="No Proxy For">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Default connection mode</div>
+            <div class="setting-desc">Mode to use when auto-connecting</div>
+          </div>
+          <div class="setting-control">
+            <select class="select" id="default-mode">
+              <option value="public">Public Proxies</option>
+              <option value="custom">Custom Proxy</option>
+            </select>
+          </div>
+        </div>
       </div>
+    </section>
 
-      <div class="button-group">
-        <button id="saveSettings">Save & Enable</button>
-        <button id="disableProxy">Disable</button> 
-        <button id="checkAnyoneButton">Check ANyONe</button>
+    <!-- Privacy Settings -->
+    <section class="settings-section">
+      <div class="section-title">Privacy</div>
+      <div class="settings-card">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Local Network Access</div>
+            <div class="setting-desc">Access routers, printers, NAS, and local devices while connected</div>
+          </div>
+          <div class="setting-control">
+            <label class="toggle">
+              <input type="checkbox" id="bypass-local" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">WebRTC Leak Protection</div>
+            <div class="setting-desc">Prevent real IP leaks through WebRTC</div>
+          </div>
+          <div class="setting-control">
+            <label class="toggle">
+              <input type="checkbox" id="webrtc-protection">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Kill Switch</div>
+            <div class="setting-desc">Block all traffic if proxy disconnects</div>
+          </div>
+          <div class="setting-control">
+            <label class="toggle">
+              <input type="checkbox" id="kill-switch">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="setting-row vertical">
+          <div class="setting-info" style="width: 100%;">
+            <div class="setting-label">Bypass List <span class="setting-hint">(comma separated)</span></div>
+            <div class="setting-desc">Domains and IPs that should bypass the proxy (applies to both Public and Custom modes)</div>
+          </div>
+          <div class="setting-control">
+            <textarea class="exceptions-input large" id="exceptions" placeholder="example.com, *.mydomain.com, 203.0.113.*" autocomplete="off" spellcheck="false"></textarea>
+          </div>
+          <div class="bypass-buttons">
+            <button class="btn btn-secondary btn-sm" id="btn-clear-bypass">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+              </svg>
+              Clear
+            </button>
+            <button class="btn btn-primary btn-sm" id="btn-save-bypass">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                <polyline points="17 21 17 13 7 13 7 21"/>
+                <polyline points="7 3 7 8 15 8"/>
+              </svg>
+              Save
+            </button>
+          </div>
+        </div>
+
+        </div>
+    </section>
+
+    <!-- Public Proxies Settings -->
+    <section class="settings-section">
+      <div class="section-title">Public Proxies</div>
+      <div class="settings-card">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Proxy list source</div>
+            <div class="setting-desc">Where to fetch the public proxy list from</div>
+          </div>
+          <div class="setting-control">
+            <select class="select" id="proxy-source">
+              <option value="arweave">Arweave</option>
+              <option value="git">GitBros</option>
+              <option value="github">GitHub</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Auto-update interval</div>
+            <div class="setting-desc">How often to refresh proxy list</div>
+          </div>
+          <div class="setting-control">
+            <select class="select" id="update-interval">
+              <option value="1">Every hour</option>
+              <option value="6">Every 6 hours</option>
+              <option value="12">Every 12 hours</option>
+              <option value="24">Every 24 hours</option>
+              <option value="0" selected>Manual only</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="proxy-source-info">
+          <div class="proxy-source-icon">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+              <line x1="12" y1="22.08" x2="12" y2="12"/>
+            </svg>
+          </div>
+          <div class="proxy-source-details">
+            <div class="proxy-source-name" id="source-name">GitBros</div>
+            <a class="proxy-source-url" id="source-url" href="https://git.debros.io/DeBros/anyone-proxy-list" target="_blank">
+              git.debros.io/DeBros/anyone-proxy-list
+              <svg class="icon-external" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                <polyline points="15 3 21 3 21 9"/>
+                <line x1="10" y1="14" x2="21" y2="3"/>
+              </svg>
+            </a>
+            <div class="proxy-source-updated" id="source-updated">Last updated: Never</div>
+          </div>
+          <button class="btn btn-secondary" id="btn-refresh-proxies">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"/>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+            </svg>
+            Refresh
+          </button>
+        </div>
       </div>
-      <p id="statusMessage"></p>
+    </section>
 
-      <div class="credits">
-        <a href="https://debros.io" target="_blank" rel="noopener noreferrer" class="credits-link" aria-label="Visit DeBros website">
-          <img src="../images/debroslogo.png" alt="DeBros Logo" width="30" height="30">
-          <span>This extension was created by DeBros</span>          
-        </a>
-        <a href="https://git.debros.io/DeBros/anyone-extension" target="_blank" rel="noopener noreferrer" class="credits-link" aria-label="Explore the open source code and documentation">
-          <span>It's open source - explore the code and docs here</span>
-        </a>
+    <!-- Custom Proxy Settings -->
+    <section class="settings-section">
+      <div class="section-title">Custom Proxy</div>
+      <div class="settings-card">
+        <div class="setting-row vertical">
+          <div class="setting-info">
+            <div class="setting-label">Proxy Address</div>
+            <div class="setting-desc">Your custom SOCKS5 proxy server</div>
+          </div>
+          <div class="setting-control">
+            <div class="port-inputs">
+              <div class="port-input-group" style="flex: 2;">
+                <label>IP / Hostname</label>
+                <input type="text" class="input" id="custom-ip" placeholder="192.168.1.100 or relayup.local" autocomplete="off" spellcheck="false">
+              </div>
+              <div class="port-input-group" style="flex: 1;">
+                <label>Port</label>
+                <input type="number" class="input" id="custom-port" placeholder="9050" autocomplete="off">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="setting-row vertical">
+          <div class="setting-info">
+            <div class="setting-label">Authentication <span class="setting-hint">(optional)</span></div>
+            <div class="setting-desc">Username and password if your proxy requires authentication</div>
+          </div>
+          <div class="setting-control">
+            <div class="port-inputs">
+              <div class="port-input-group">
+                <label>Username</label>
+                <input type="text" class="input" id="custom-username" placeholder="username" autocomplete="off" spellcheck="false">
+              </div>
+              <div class="port-input-group">
+                <label>Password</label>
+                <input type="password" class="input" id="custom-password" placeholder="password" autocomplete="off">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button class="btn btn-secondary" id="btn-clear-custom">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+            </svg>
+            Clear
+          </button>
+          <button class="btn btn-secondary" id="btn-test-custom">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            Test Connection
+          </button>
+          <button class="btn btn-primary" id="btn-save-custom">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+              <polyline points="17 21 17 13 7 13 7 21"/>
+              <polyline points="7 3 7 8 15 8"/>
+            </svg>
+            Save Settings
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="settings-section">
+      <div class="section-title">About</div>
+      <div class="settings-card">
+        <div class="about-logos">
+          <a href="https://anyone.io" target="_blank" class="about-logo-link">
+            <img src="../images/anyone2.png" alt="ANyONe" class="about-logo">
+          </a>
+          <a href="https://debros.io" target="_blank" class="about-logo-link">
+            <img src="../images/DeBros_White_Transparent.png" alt="DeBros" class="about-logo">
+          </a>
+        </div>
+        <div class="donate-section">
+          <p class="donate-message">DeBros creates privacy-first and decentralized tools for a freer world. Support our mission.</p>
+          <a href="https://debros.io/donate" target="_blank" class="btn btn-donate">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+            Support DeBros
+          </a>
+        </div>
+        <div class="disclaimer">
+          This software is provided "as is" without warranty. Use at your own risk.
+          See <a href="https://github.com/DeBrosOfficial/anyone-extension/blob/main/LICENSE" target="_blank">LICENSE</a> for details.
+        </div>
+        <div class="version-info">
+          <div>Created by DeBros | Version 2.0.1</div>
+          <div class="open-source">
+            <a href="https://git.debros.io/DeBros/anyone-extension" target="_blank">View Source Code</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13" stroke-width="2.5"/>
+          <circle cx="12" cy="17" r="1" fill="currentColor" stroke="none"/>
+        </svg>
+      </div>
+      <h3 class="modal-title" id="modal-title">Disable Local Network Access?</h3>
+      <p class="modal-message" id="modal-message">
+        This will make local devices (printers, NAS, router etc) unreachable while connected to the proxy.
+      </p>
+      <div class="modal-buttons">
+        <button class="btn btn-secondary" id="modal-cancel">Cancel</button>
+        <button class="btn btn-danger" id="modal-confirm">Disable</button>
       </div>
     </div>
-    <script src="../js/options.js"></script>
-  </body>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <svg class="icon" id="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+      <polyline points="22 4 12 14.01 9 11.01"/>
+    </svg>
+    <span id="toast-message">Settings saved</span>
+  </div>
+
+  <script type="module" src="../js/options.js"></script>
+</body>
 </html>

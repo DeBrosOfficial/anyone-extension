@@ -1,225 +1,121 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>ANyONe Network Gateway</title>
-    <style>
-      body {
-        font-family: Arial, Helvetica, sans-serif;
-        margin: 0; 
-        padding: 10px 30px 10px;
-        background-image: url('../images/popupback.png');
-        background-size: cover; 
-        background-repeat: no-repeat; 
-        background-position: center;
-        background-color: #6d8392;
-        color: white;
-        text-align: center;
-        width: 220px; 
-        height: 500px; 
-        overflow: hidden; 
-      }
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ANyONe Extension</title>
+  <link rel="stylesheet" href="../css/popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <!-- Header -->
+    <header class="popup-header">
+      <div class="logo">
+        <img src="../images/anyone2.png" alt="ANyONe" class="logo-img">
+        <span class="logo-subtitle">Privacy Extension</span>
+      </div>
+    </header>
 
-      #anonLogo {
-        margin: 10px auto 10px;
-        display: block;
-      }
+    <!-- Mode Selection -->
+    <section class="mode-section">
+      <div class="mode-tabs">
+        <button class="mode-tab active" data-mode="public">Public Proxies</button>
+        <button class="mode-tab" data-mode="custom">Custom Proxy</button>
+      </div>
+    </section>
 
-      .switch {
-        position: relative;
-        display: inline-block;
-        width: 50px;
-        height: 15px;
-      }
+    <!-- Mode Content: Public -->
+    <section class="mode-content active" id="mode-public">
+      <div class="card">
+        <div class="proxy-info">
+          <div class="proxy-info-row">
+            <span class="proxy-info-label">Mode</span>
+            <span class="proxy-info-value" id="proxy-mode">Auto (Fastest)</span>
+          </div>
+          <div class="proxy-info-row">
+            <span class="proxy-info-label">Available</span>
+            <span class="proxy-info-value" id="proxy-count">Loading...</span>
+          </div>
+        </div>
+        <div class="proxy-actions">
+          <button class="btn btn-secondary" id="btn-connect-text">Connect</button>
+          <button class="btn btn-secondary" id="btn-next-proxy">Next Proxy</button>
+        </div>
+      </div>
+    </section>
 
-      .switch input {
-        opacity: 1;
-        width: 0;
-        height: 0;
-      }
+    <!-- Mode Content: Custom -->
+    <section class="mode-content" id="mode-custom">
+      <div class="card">
+        <div class="custom-form">
+          <div class="input-row">
+            <div class="input-group">
+              <label class="input-label">IP / Hostname</label>
+              <input type="text" class="input" id="custom-ip" placeholder="relayup.local">
+            </div>
+            <div class="input-group port">
+              <label class="input-label">Port</label>
+              <input type="number" class="input" id="custom-port" placeholder="9050">
+            </div>
+          </div>
+          <button class="btn btn-secondary w-full" id="btn-test-custom">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            Test Connection
+          </button>
+        </div>
+      </div>
+    </section>
 
-      .slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #e74c3c;
-        transition: 0.4s;
-        border-radius: 34px;
-      }
+    <!-- Connect Button -->
+    <section class="connect-section">
+      <button class="connect-btn" id="btn-connect">
+        <div class="connect-btn-ring"></div>
+        <img src="../images/anonlogo.png" alt="Connect" class="connect-btn-icon">
+      </button>
+    </section>
 
-      .slider:before {
-        position: absolute;
-        content: "";
-        height: 25px;
-        width: 25px;
-        left: 0px;
-        bottom: -4px;
-        background-color: #ffffff;
-        transition: 0.4s;
-        border-radius: 50%;
-      }
+    <!-- Status Card -->
+    <section class="status-card" id="status-card">
+      <div class="status-main">
+        <div class="status-dot-container">
+          <span class="status-dot offline" id="status-dot"></span>
+        </div>
+        <div class="status-info">
+          <span class="status-text" id="status-text">Disconnected</span>
+          <span class="status-ip" id="status-ip" style="display: none;">-</span>
+        </div>
+      </div>
+    </section>
 
-      input:checked + .slider {
-        background-color: #02af50;
-      }
+    <!-- Quick Actions -->
+    <section class="quick-actions">
+      <button class="quick-action" id="btn-check-ip">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <span class="quick-action-label">Check IP</span>
+      </button>
+      <button class="quick-action" id="btn-refresh">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="23 4 23 10 17 10"/>
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+        </svg>
+        <span class="quick-action-label">Refresh</span>
+      </button>
+      <button class="quick-action" id="btn-settings">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+        <span class="quick-action-label">Settings</span>
+      </button>
+    </section>
+  </div>
 
-      input:checked + .slider:before {
-        transform: translateX(26px);
-      }
-
-      #statusMessage {
-        margin-top: 30px;
-        font-size: 16px;
-        font-weight: bold;
-        min-height: 30px;
-        max-width: 100%;
-        overflow-wrap: break-word;
-      }
-
-      .button-container-1 {
-        margin-top: 10px;
-        margin-bottom: 5px;
-        display: flex;
-        justify-content: center; 
-        flex-wrap: nowrap; 
-        align-items: center; 
-        position: absolute; 
-        bottom: 140px;
-        left: 0;
-        right: 0;
-      }
-
-      .button-container-2 {
-        margin-top: 10px;
-        margin-bottom: 20px;
-        display: flex;
-        justify-content: center; 
-        flex-wrap: nowrap; 
-        align-items: center; 
-        position: absolute; 
-        bottom: 65px;
-        left: 0;
-        right: 0;
-      }
-
-      button {
-        color: white;
-        padding: 5px 15px;
-        font-size: 14px;
-        font-weight: normal;
-        border-radius: 5px;
-        cursor: pointer;
-        margin: 0 5px;
-        width: 100px; 
-        height: auto; 
-        box-sizing: border-box;
-        text-align: center; 
-        white-space: normal;
-        overflow: visible; 
-        display: inline-flex; 
-        flex-direction: column; 
-        justify-content: center;  
-      }
-
-      #checkAnyoneButton {
-        background-color: #0280AF;
-        border: 1px solid #0280AF;
-      }
-
-      #checkAnyoneButton:hover {
-        background-color: #0074f0;
-      }
-
-      #updateProxiesButton {
-        background-color: #0a121e;
-        border: 1px solid #0280AF;
-      }
-
-      #updateProxiesButton:hover {
-        background-color: #0280AF;
-      }
-
-      #optionsButton {
-        background-color: #0a121e;
-        border: 1px solid #03bdc5;
-      }
-
-      #optionsButton:hover {
-        background-color: #03bdc5;
-      }
-
-      #dappStoreButton {
-        background-color: #0a121e;
-        border: 1px solid #03bdc5;
-      }
-
-      #dappStoreButton:hover {
-        background-color: #03bdc5;
-      }
-
-      .footer {
-        position: absolute;
-        bottom: 0px;
-        left: 0;
-        right: 0;
-        display: flex;
-        justify-content: center;
-        gap: 30px;
-      }
-
-      .social-link {
-        display: block;
-        width: 30px;
-        height: 30px; 
-        background-size: contain;
-        background-repeat: no-repeat;
-        background-position: center;
-        margin-top: 10px;
-        margin-bottom: 30px;
-        transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out;
-      }
-
-      .social-link:hover {
-        transform: scale(1.2) translateY(-1px); 
-        filter: brightness(1.1); 
-      }
-
-      .social-link.debros { background-image: url('../images/debroslogo.png'); }
-      .social-link.x { background-image: url('../images/x.png'); }
-      .social-link.docs { background-image: url('../images/gitbros.png'); }
-      .social-link.anyone { background-image: url('../images/anonlogo.png'); }
-    </style>
-  </head>
-  <body>
-    <img src="../images/anonlogo.png" alt="AnON Logo" width="120" height="120" id="anonLogo">
-    <h1>ANyONe Proxy</h1>
-
-    <label class="switch">
-      <input type="checkbox" id="proxyToggle">
-      <span class="slider"></span>
-    </label>
-
-    <p id="statusMessage"></p>
-
-    <div class="button-container-1">
-      <button id="checkAnyoneButton">Check ANyONe</button>
-      <button id="updateProxiesButton">Update Proxies</button>
-    </div>
-
-    <div class="button-container-2">
-      <button id="optionsButton">Custom Settings</button>
-      <button id="dappStoreButton">dApp Store</button>
-    </div>
-
-    <div class="footer">
-      <a href="https://debros.io" class="social-link debros" target="_blank"></a>
-      <a href="https://x.com/debrosofficial" class="social-link x" target="_blank"></a>
-      <a href="https://git.debros.io/DeBros/anyone-extension" class="social-link docs" target="_blank"></a>
-      <a href="https://anyone.io" class="social-link anyone" target="_blank"></a>
-    </div>
-
-    <script src="../js/popup.js"></script>
-  </body>
+  <script type="module" src="../js/popup.js"></script>
+</body>
 </html>

@@ -1,286 +1,728 @@
-let proxies = []; // Initially empty, will be populated from local storage or fetched from the server
-let currentProxyIndex = 0; // Start with the first proxy
-let proxyEnabled = false;
+/* ANyONe Extension v2 - Background Service Worker */
 
-console.log("background.js is running");
+// ES Module imports
+import { CONFIG } from './config.js';
+import { Utils } from './utils.js';
+import { Storage } from './storage.js';
+import { ProxyManager } from './proxy-manager.js';
 
-function applyProxySettings(host, port, exceptions = []) {
-  const proxyConfig = {
-    mode: "fixed_servers",
-    rules: {
-      singleProxy: {
-        scheme: "socks5",
-        host,
-        port,
-      },
-      bypassList: exceptions.concat([""]),
-    },
-  };
+// ============================================
+// Initialization
+// ============================================
 
-  chrome.proxy.settings.set({ value: proxyConfig, scope: "regular" }, () => {
-    const lastError = chrome.runtime.lastError;
-    if (lastError) {
-      console.error("Error applying proxy settings:", lastError);
-      fallbackToNextProxy(); // Move to the next proxy if the current one fails
-    } else {
-      console.log(`Proxy applied: ${host}:${port}`);
-      proxyEnabled = true;
-    }
-  });
-}
+Utils.log('info', 'Background service worker starting...');
 
-function clearProxySettings() {
-  chrome.proxy.settings.clear({}, () => {
-    const lastError = chrome.runtime.lastError;
-    if (lastError) {
-      console.error("Error clearing proxy settings:", lastError);
-    } else {
-      console.log("Proxy settings cleared.");
-      proxyEnabled = false;
-      currentProxyIndex = 0; // Reset to the first proxy
-    }
-  });
-}
+// Initialize on startup
+chrome.runtime.onInstalled.addListener(async (details) => {
+  Utils.log('info', `Extension ${details.reason}`, { version: CONFIG.VERSION });
 
-function fallbackToNextProxy() {
-  currentProxyIndex = (currentProxyIndex + 1) % proxies.length; // Move to the next proxy in the list
-  if (proxies.length > 0) {
-    const { host, port } = proxies[currentProxyIndex];
-    console.log(`Falling back to proxy: ${host}:${port}`);
-    applyProxySettings(host, port);
-  } else {
-    console.error("No proxies available to fall back to.");
-  }
-}
+  if (details.reason === 'install') {
+    // First install
+    Utils.log('info', 'First install, setting up defaults...');
 
-function checkProxyFunctionality(proxy, callback) {
-  const proxyConfig = {
-    mode: "fixed_servers",
-    rules: {
-      singleProxy: {
-        scheme: "socks5",
-        host: proxy.host,
-        port: proxy.port
-      },
-      bypassList: [""]
-    }
-  };
-
-  chrome.proxy.settings.set({ value: proxyConfig, scope: "regular" }, () => {
-    if (chrome.runtime.lastError) {
-      console.error("Error setting proxy for check:", chrome.runtime.lastError);
-      callback(false);
-      return;
-    }
-
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-
-    fetch('https://check.en.anyone.tech', { 
-      mode: 'no-cors',
-      signal: controller.signal
-    })
-      .then(response => {
-        clearTimeout(timeoutId);
-        if (response.ok) {
-          console.log("Proxy check successful");
-          callback(true); // Connection successful
-        } else {
-          console.log("Proxy check failed");
-          callback(false); // Connection failed
-        }
-      })
-      .catch(error => {
-        if (error.name === 'AbortError') {
-          console.log("Request timed out");
-        } else {
-          console.error("Error in proxy check:", error);
-        }
-        callback(false);
-      });
-  });
-}
-
-function enableFirstWorkingProxy(callback) {
-  let index = 0;
-
-  function tryNextProxy() {
-    if (index >= proxies.length) {
-      console.log("No working proxy found");
-      callback(false);
-      return;
-    }
-
-    const proxy = proxies[index];
-    console.log("Checking proxy:", proxy.host + ":" + proxy.port);
-    checkProxyFunctionality(proxy, (isWorking) => {
-      if (isWorking) {
-        currentProxyIndex = index; // Update currentProxyIndex
-        console.log("Found working proxy:", proxy.host + ":" + proxy.port);
-        applyProxySettings(proxy.host, proxy.port);
-        chrome.storage.local.set({ proxyEnabled: true, currentProxy: proxy });
-        callback(true);
-      } else {
-        index++;
-        tryNextProxy();
-      }
+    // Set defaults
+    await Storage.set({
+      [CONFIG.STORAGE_KEYS.MODE]: CONFIG.DEFAULTS.MODE,
+      [CONFIG.STORAGE_KEYS.PROXY_ENABLED]: false,
+      [CONFIG.STORAGE_KEYS.AUTO_CONNECT]: CONFIG.DEFAULTS.AUTO_CONNECT,
+      [CONFIG.STORAGE_KEYS.WEBRTC_PROTECTION]: CONFIG.DEFAULTS.WEBRTC_PROTECTION,
+      [CONFIG.STORAGE_KEYS.BYPASS_LOCAL]: CONFIG.DEFAULTS.BYPASS_LOCAL
     });
-  }
 
-  tryNextProxy();
-}
-
-function fetchProxies() {
-  console.log("Starting to fetch proxies...");
-  return fetch('https://git.debros.io/DeBros/anyone-proxy-list/raw/branch/main/anonproxies.json') // list of public proxies
-    .then(response => {
-      console.log("Response status:", response.status);
-      if (!response.ok) {
-        console.error("Response not OK");
-        throw new Error('Network response was not ok');
-      }
-      return response.json();
-    })
-    .then(data => {
-      console.log("Data received:", data);
-      proxies = data;
-      // Save the proxies to local storage
-      chrome.storage.local.set({ 'proxyList': proxies }, () => {
-        console.log('Proxies updated and saved:', proxies);
-      });
-    })
-    .catch(error => {
-      console.error('Failed to fetch proxies:', error);
-    });
-}
-
-// Load proxies from storage on extension startup if they exist
-chrome.storage.local.get('proxyList', function(result) {
-  if (result.proxyList) {
-    proxies = result.proxyList;
-    console.log('Loaded proxies from storage:', proxies);
-  } else {
-    console.log('No proxies found in local storage, fetch required.');
+    // Auto-fetch proxies on first install
+    Utils.log('info', 'Fetching initial proxy list...');
+    try {
+      const source = CONFIG.DEFAULTS.PROXY_SOURCE;
+      await handleFetchProxies(source);
+      Utils.log('info', 'Initial proxy list fetched successfully');
+    } catch (error) {
+      Utils.log('error', 'Failed to fetch initial proxy list', error);
+    }
+  } else if (details.reason === 'update') {
+    Utils.log('info', 'Extension updated');
   }
 });
 
-// This event listener runs when the extension is first installed or updated
-chrome.runtime.onInstalled.addListener((details) => {
-  if (details.reason === "install") {
-    console.log("Extension installed for the first time. Fetching proxies...");
-    // Fetch proxies automatically on first install but don't enable them
-    fetchProxies().then(() => {
-      console.log("Proxies updated on first install.");
-      // Don't enable proxy automatically, just fetch and store it
-    });
+// Load state on startup
+chrome.runtime.onStartup.addListener(async () => {
+  Utils.log('info', 'Browser startup');
+  await ProxyManager.init();
+
+  // Check auto-connect setting
+  const autoConnect = await Storage.getValue(CONFIG.STORAGE_KEYS.AUTO_CONNECT, false);
+  if (autoConnect) {
+    Utils.log('info', 'Auto-connect enabled, connecting...');
+    const mode = await Storage.getMode();
+    await handleConnect(mode);
   }
 });
+
+// ============================================
+// Message Handlers
+// ============================================
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log("Received message in background:", message);
-  if (message.action === "enableProxy") {
-    console.log("Enabling proxy...");
-    chrome.runtime.sendMessage({ action: "showLoadingMessage", message: "Please wait..." });
-    enableFirstWorkingProxy((success) => {
-      if (success) {
-        console.log("Proxy enabled successfully");
-        sendResponse({ status: "enabled", proxy: proxies[currentProxyIndex] });
-      } else {
-        console.log("Failed to enable proxy");
-        sendResponse({ status: "error", message: "No public proxy available at this moment. Please configure a custom proxy in the settings." });
-      }
+  Utils.log('debug', 'Message received', message);
+
+  // Handle async responses
+  handleMessage(message, sender)
+    .then(response => sendResponse(response))
+    .catch(error => {
+      Utils.log('error', 'Message handler error', error);
+      sendResponse({ success: false, error: error.message });
     });
-    return true; // For async response
-  } else if (message.action === "disableProxy") {
-    console.log("Disabling proxy...");
-    clearProxySettings();
-    chrome.storage.local.set({ proxyEnabled: false, proxyType: null });
-    sendResponse({ status: "disabled" });
-    chrome.tabs.query({}, function(tabs) {
-      for (let tab of tabs) {
-        chrome.tabs.sendMessage(tab.id, {action: "disableProxy"}, function(response) {
-          if (chrome.runtime.lastError) {
-            console.warn("Warning: Could not send message to tab " + tab.id + ". Tab might have been closed.", chrome.runtime.lastError.message);
-          }
-        });
-      }
-    });
-  } else if (message.action === "updateProxy") {
-    console.log("Updating proxy settings...");
-    if (message.type === "custom") {
-      // Custom proxy enable
-      applyProxySettings(message.proxy.host, parseInt(message.proxy.port), message.exceptions || []);
-      chrome.storage.local.set({ 
-        proxyEnabled: true, 
-        proxyType: "custom", 
-        proxyIP: message.proxy.host, 
-        proxyPort: message.proxy.port 
-      });
-      sendResponse({ status: "enabled", proxy: message.proxy });
-      chrome.tabs.query({}, function(tabs) {
-        for (let tab of tabs) {
-          chrome.tabs.sendMessage(tab.id, {action: "updatePopupState"}, function(response) {
-            if (chrome.runtime.lastError) {
-              console.warn("Warning: Could not send message to tab " + tab.id + ". Tab might have been closed.", chrome.runtime.lastError.message);
-            }
-          });
-        }
-      });
-    } else if (message.type === "public") {
-      // Public proxy enable
-      chrome.runtime.sendMessage({ action: "showLoadingMessage", message: "Please wait..." });
-      enableFirstWorkingProxy((success) => {
-        if (success) {
-          console.log("Public proxy enabled successfully");
-          sendResponse({ status: "enabled", proxy: proxies[currentProxyIndex] });
-        } else {
-          console.log("Failed to enable public proxy");
-          sendResponse({ status: "error", message: "No public proxy available at this moment. Please configure a custom proxy in the settings." });
-        }
-      });
-      return true; // For async response
-    } else if (message.type === "disabled") {
-      clearProxySettings();
-      chrome.storage.local.set({ proxyEnabled: false, proxyType: null });
-      sendResponse({ status: "disabled" });
-      chrome.tabs.query({}, function(tabs) {
-        for (let tab of tabs) {
-          chrome.tabs.sendMessage(tab.id, {action: "disableProxy"}, function(response) {
-            if (chrome.runtime.lastError) {
-              console.warn("Warning: Could not send message to tab " + tab.id + ". Tab might have been closed.", chrome.runtime.lastError.message);
-            }
-          });
-        }
-      });
-    }
-  } else if (message.action === "proxyFailed") {
-    console.log("Proxy setup failed:", message.error);
-    clearProxySettings();
-    chrome.storage.local.set({ proxyEnabled: false, proxyType: null });
-    chrome.tabs.query({}, function(tabs) {
-      for (let tab of tabs) {
-        chrome.tabs.sendMessage(tab.id, {action: "toggleOff"}, function(response) {
-          if (chrome.runtime.lastError) {
-            console.warn("Warning: Could not send message to tab " + tab.id + ". Tab might have been closed.", chrome.runtime.lastError.message);
-          }
-        });
-      }
-    });
-  } else if (message.action === "updateProxies") {
-    console.log("Attempting to update proxies...");
-    fetchProxies().then(() => {
-      console.log("Proxies fetched successfully");
-      sendResponse({success: true, proxies: proxies});
-      chrome.runtime.sendMessage({ action: "updateStatus", message: "Proxy list updated successfully!", color: "#2ecc71" });
-    }).catch(error => {
-      console.error("Failed to fetch proxies:", error);
-      sendResponse({success: false, message: "Failed to update proxy list."});
-      chrome.runtime.sendMessage({ action: "updateStatus", message: "Failed to update proxy list.", color: "#e74c3c" });
-    });
-    return true; // Indicates this is an async response
-  } else {
-    console.log("Unknown action received:", message.action);
-    sendResponse({ status: "error", message: "Unknown action." });
-  }
-  return true;
+
+  return true; // Keep channel open for async response
 });
+
+/**
+ * Handle incoming messages
+ * @param {object} message - Message object
+ * @param {object} sender - Sender info
+ * @returns {Promise<object>}
+ */
+async function handleMessage(message, sender) {
+  switch (message.action) {
+    // ============================================
+    // Connection Actions
+    // ============================================
+
+    case 'connect':
+      return handleConnect(message.mode, message.options);
+
+    case 'disconnect':
+      return handleDisconnect();
+
+    case 'getStatus':
+      return handleGetStatus();
+
+    // ============================================
+    // Proxy List Actions
+    // ============================================
+
+    case 'fetchProxies':
+      return handleFetchProxies(message.source);
+
+    case 'getProxyList':
+      return handleGetProxyList();
+
+    case 'testProxy':
+      return handleTestProxy(message.proxy);
+
+    // ============================================
+    // Settings Actions
+    // ============================================
+
+    case 'getSettings':
+      return handleGetSettings();
+
+    case 'saveSettings':
+      return handleSaveSettings(message.settings);
+
+    case 'clearCustomProxy':
+      return handleClearCustomProxy();
+
+    case 'setMode':
+      return handleSetMode(message.mode);
+
+    case 'nextProxy':
+      return handleNextProxy();
+
+    // ============================================
+    // Utility Actions
+    // ============================================
+
+    case 'openOptions':
+      chrome.runtime.openOptionsPage();
+      return { success: true };
+
+    case 'openUrl':
+      chrome.tabs.create({ url: message.url });
+      return { success: true };
+
+    default:
+      Utils.log('warn', 'Unknown action', message.action);
+      return { success: false, error: 'Unknown action' };
+  }
+}
+
+// ============================================
+// Action Handlers
+// ============================================
+
+/**
+ * Handle connect action
+ * @param {string} mode - Connection mode
+ * @param {object} options - Additional options
+ * @returns {Promise<object>}
+ */
+async function handleConnect(mode, options = {}) {
+  Utils.log('info', 'Connecting', { mode, options });
+
+  // Deactivate kill switch if it was active
+  const killSwitchActive = await Storage.getValue('killSwitchActive', false);
+  if (killSwitchActive) {
+    await applyKillSwitch(false);
+    Utils.log('info', 'Kill switch deactivated for new connection');
+  }
+
+  // Notify popup of loading state
+  broadcastMessage({ action: 'statusUpdate', status: 'connecting' });
+
+  // Get local network access setting and exceptions (bypass list)
+  const bypassLocal = await Storage.getValue(CONFIG.STORAGE_KEYS.BYPASS_LOCAL, true);
+  const exceptions = await Storage.getValue(CONFIG.STORAGE_KEYS.EXCEPTIONS, []);
+
+  let result;
+
+  switch (mode) {
+    case CONFIG.MODES.PUBLIC:
+      await ProxyManager.init();
+      result = await ProxyManager.connectToFastest(options.country, bypassLocal, exceptions);
+      break;
+
+    case CONFIG.MODES.CUSTOM:
+      const customProxy = await Storage.getCustomProxy();
+      Utils.log('info', 'Custom proxy settings loaded', {
+        ip: customProxy.ip,
+        port: customProxy.port,
+        exceptions: customProxy.exceptions,
+        bypassLocal
+      });
+      if (!customProxy.ip || !customProxy.port) {
+        result = { success: false, error: 'Custom proxy not configured' };
+      } else {
+        result = await ProxyManager.connectCustom(
+          customProxy.ip,
+          customProxy.port,
+          customProxy.exceptions,
+          bypassLocal
+        );
+      }
+      break;
+
+    default:
+      result = { success: false, error: 'Invalid mode' };
+  }
+
+  if (result.success) {
+    await Storage.setMode(mode);
+    await Storage.setProxyEnabled(true);
+    broadcastMessage({
+      action: 'statusUpdate',
+      status: 'connected',
+      proxy: result.proxy,
+      mode
+    });
+  } else {
+    broadcastMessage({
+      action: 'statusUpdate',
+      status: 'error',
+      error: result.error
+    });
+  }
+
+  return result;
+}
+
+/**
+ * Handle disconnect action
+ * @returns {Promise<object>}
+ */
+async function handleDisconnect() {
+  Utils.log('info', 'Disconnecting');
+
+  // Check if kill switch should be activated
+  const killSwitch = await Storage.getValue(CONFIG.STORAGE_KEYS.KILL_SWITCH, false);
+
+  const success = await ProxyManager.disconnect();
+
+  // If kill switch is enabled, block traffic after disconnect
+  if (killSwitch) {
+    await applyKillSwitch(true);
+    broadcastMessage({
+      action: 'statusUpdate',
+      status: 'blocked',
+      message: 'Kill Switch active - all traffic blocked'
+    });
+  } else {
+    broadcastMessage({
+      action: 'statusUpdate',
+      status: success ? 'disconnected' : 'error'
+    });
+  }
+
+  await Storage.setProxyEnabled(false);
+  return { success };
+}
+
+/**
+ * Handle get status action
+ * @returns {Promise<object>}
+ */
+async function handleGetStatus() {
+  const [enabled, mode, currentProxy, killSwitchActive] = await Promise.all([
+    Storage.isProxyEnabled(),
+    Storage.getMode(),
+    Storage.getCurrentProxy(),
+    Storage.getValue('killSwitchActive', false)
+  ]);
+
+  return {
+    success: true,
+    enabled,
+    mode,
+    currentProxy,
+    killSwitchActive
+  };
+}
+
+/**
+ * Handle next proxy action (load balancing)
+ * @returns {Promise<object>}
+ */
+async function handleNextProxy() {
+  Utils.log('info', 'Switching to next proxy');
+  await ProxyManager.init();
+
+  // Check if proxy list is empty and fetch if needed
+  const status = ProxyManager.getStatus();
+  if (status.proxyCount === 0) {
+    Utils.log('info', 'Proxy list empty, fetching first...');
+    const source = await Storage.getValue(CONFIG.STORAGE_KEYS.PROXY_SOURCE, 'git');
+    const fetchResult = await ProxyManager.fetchProxyList(source);
+    if (!fetchResult.success || fetchResult.proxies.length === 0) {
+      return { success: false, error: 'Failed to fetch proxy list' };
+    }
+  }
+
+  const result = await ProxyManager.fallbackToNext();
+
+  if (result.success) {
+    broadcastMessage({
+      action: 'statusUpdate',
+      status: 'connected',
+      proxy: result.proxy
+    });
+  }
+
+  return result;
+}
+
+/**
+ * Handle fetch proxies action
+ * @param {string} source - Proxy source
+ * @returns {Promise<object>}
+ */
+async function handleFetchProxies(source = 'arweave') {
+  const result = await ProxyManager.fetchProxyList(source);
+
+  if (result.success) {
+    broadcastMessage({
+      action: 'proxiesUpdated',
+      count: result.proxies.length,
+      usedSource: result.usedSource
+    });
+  }
+
+  return result;
+}
+
+/**
+ * Handle get proxy list action
+ * @returns {Promise<object>}
+ */
+async function handleGetProxyList() {
+  const proxyList = await Storage.getProxyList();
+  const lastUpdate = await Storage.getLastUpdate();
+
+  return {
+    success: true,
+    proxies: proxyList,
+    lastUpdate,
+    count: proxyList.length
+  };
+}
+
+/**
+ * Handle test proxy action
+ * @param {object} proxy - Proxy to test
+ * @returns {Promise<object>}
+ */
+async function handleTestProxy(proxy) {
+  const result = await ProxyManager.testProxy(proxy);
+  return { success: true, ...result };
+}
+
+/**
+ * Handle get settings action
+ * @returns {Promise<object>}
+ */
+async function handleGetSettings() {
+  const settings = await Storage.getAllSettings();
+  return { success: true, settings };
+}
+
+/**
+ * Handle save settings action
+ * @param {object} settings - Settings to save
+ * @returns {Promise<object>}
+ */
+async function handleSaveSettings(settings) {
+  try {
+    await Storage.set(settings);
+
+    // Apply WebRTC protection if changed
+    if (settings.webrtcProtection !== undefined) {
+      await applyWebRTCProtection(settings.webrtcProtection);
+    }
+
+    // Apply Kill Switch if changed
+    if (settings.killSwitch !== undefined) {
+      const proxyEnabled = await Storage.isProxyEnabled();
+
+      if (settings.killSwitch && !proxyEnabled) {
+        // Kill switch enabled while not connected - block traffic
+        await applyKillSwitch(true);
+        broadcastMessage({
+          action: 'statusUpdate',
+          status: 'blocked',
+          message: 'Kill Switch active - connect to unblock'
+        });
+      } else if (!settings.killSwitch) {
+        // Kill switch disabled - restore normal traffic
+        const killSwitchActive = await Storage.getValue('killSwitchActive', false);
+        if (killSwitchActive) {
+          await applyKillSwitch(false);
+          broadcastMessage({
+            action: 'statusUpdate',
+            status: 'disconnected'
+          });
+        }
+      }
+    }
+
+    // Check if custom proxy connection settings changed (IP, port, credentials)
+    const customProxyConnectionChanged =
+      settings.proxyIP !== undefined ||
+      settings.proxyPort !== undefined ||
+      settings.proxyUsername !== undefined ||
+      settings.proxyPassword !== undefined;
+
+    // Check if bypass settings changed (applies to both public and custom modes)
+    const bypassSettingsChanged =
+      settings.bypassLocal !== undefined ||
+      settings.noProxyFor !== undefined;
+
+    // Handle custom proxy connection changes (only affects custom mode)
+    if (customProxyConnectionChanged) {
+      const proxyEnabled = await Storage.isProxyEnabled();
+      const mode = await Storage.getMode();
+
+      if (proxyEnabled && mode === CONFIG.MODES.CUSTOM) {
+        Utils.log('info', 'Custom proxy settings changed while connected, re-applying...');
+
+        // Get the updated custom proxy settings
+        const customProxy = await Storage.getCustomProxy();
+        const bypassLocal = await Storage.getValue(CONFIG.STORAGE_KEYS.BYPASS_LOCAL, true);
+        const exceptions = await Storage.getValue(CONFIG.STORAGE_KEYS.EXCEPTIONS, []);
+
+        // Validate the new settings
+        if (!customProxy.ip || !customProxy.port) {
+          // Invalid settings - disconnect
+          Utils.log('warn', 'Custom proxy settings invalid, disconnecting...');
+          await ProxyManager.disconnect();
+          await Storage.setProxyEnabled(false);
+          broadcastMessage({
+            action: 'statusUpdate',
+            status: 'error',
+            error: 'Custom proxy not configured'
+          });
+        } else {
+          // Try to apply the new proxy settings
+          const result = await ProxyManager.applyProxy(
+            customProxy.ip,
+            customProxy.port,
+            exceptions,
+            bypassLocal
+          );
+
+          if (result) {
+            broadcastMessage({
+              action: 'statusUpdate',
+              status: 'connected',
+              proxy: { host: customProxy.ip, port: customProxy.port },
+              mode: CONFIG.MODES.CUSTOM
+            });
+          } else {
+            // Failed to apply - disconnect
+            await ProxyManager.disconnect();
+            await Storage.setProxyEnabled(false);
+            broadcastMessage({
+              action: 'statusUpdate',
+              status: 'error',
+              error: 'Failed to apply proxy settings'
+            });
+          }
+        }
+      }
+    }
+
+    // Handle bypass settings changes (affects both public and custom modes)
+    // Skip if custom proxy connection was already re-applied above
+    if (bypassSettingsChanged && !customProxyConnectionChanged) {
+      const proxyEnabled = await Storage.isProxyEnabled();
+      if (proxyEnabled) {
+        const mode = await Storage.getMode();
+        const currentProxy = await Storage.getCurrentProxy();
+
+        if (currentProxy) {
+          const bypassLocal = await Storage.getValue(CONFIG.STORAGE_KEYS.BYPASS_LOCAL, true);
+          const exceptions = await Storage.getValue(CONFIG.STORAGE_KEYS.EXCEPTIONS, []);
+
+          Utils.log('info', 'Bypass settings changed, re-applying proxy settings', { bypassLocal, exceptions });
+
+          if (mode === CONFIG.MODES.CUSTOM) {
+            const customProxy = await Storage.getCustomProxy();
+            await ProxyManager.applyProxy(
+              customProxy.ip,
+              customProxy.port,
+              exceptions,
+              bypassLocal
+            );
+          } else {
+            await ProxyManager.applyProxy(
+              currentProxy.host,
+              currentProxy.port,
+              exceptions,
+              bypassLocal
+            );
+          }
+        }
+      }
+    }
+
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Handle clear custom proxy action
+ * @returns {Promise<object>}
+ */
+async function handleClearCustomProxy() {
+  try {
+    Utils.log('info', 'Clearing custom proxy settings...');
+    await Storage.clearCustomProxy();
+    Utils.log('info', 'Custom proxy settings cleared successfully');
+    return { success: true };
+  } catch (error) {
+    Utils.log('error', 'Failed to clear custom proxy settings', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Handle set mode action
+ * @param {string} mode - Mode to set
+ * @returns {Promise<object>}
+ */
+async function handleSetMode(mode) {
+  await Storage.setMode(mode);
+  return { success: true, mode };
+}
+
+// ============================================
+// Utility Functions
+// ============================================
+
+/**
+ * Broadcast message to all extension pages
+ * @param {object} message - Message to broadcast
+ */
+function broadcastMessage(message) {
+  chrome.runtime.sendMessage(message).catch(() => {
+    // Ignore errors when no listeners
+  });
+}
+
+/**
+ * Handle proxy errors
+ */
+let lastProxyErrorTime = 0;
+const PROXY_ERROR_DEBOUNCE_MS = 5000; // Prevent multiple errors within 5 seconds
+
+chrome.proxy.onProxyError.addListener(async (details) => {
+  // Debounce rapid proxy errors (e.g., when network goes down)
+  const now = Date.now();
+  if (now - lastProxyErrorTime < PROXY_ERROR_DEBOUNCE_MS) {
+    Utils.log('debug', 'Proxy error debounced', details);
+    return;
+  }
+  lastProxyErrorTime = now;
+
+  Utils.log('error', 'Proxy error', details);
+
+  // Check current mode - only attempt fallback for public proxies
+  const mode = await Storage.getMode();
+  const killSwitch = await Storage.getValue(CONFIG.STORAGE_KEYS.KILL_SWITCH, false);
+
+  // For non-fatal errors in public mode, attempt fallback
+  if (!details.fatal && mode === CONFIG.MODES.PUBLIC) {
+    const result = await ProxyManager.fallbackToNext();
+    if (result.success) {
+      broadcastMessage({
+        action: 'statusUpdate',
+        status: 'connected',
+        proxy: result.proxy,
+        message: 'Switched to backup proxy'
+      });
+      return; // Successfully switched, no error to report
+    }
+  }
+
+  // Fallback failed or fatal error or custom mode - handle disconnect
+  if (killSwitch) {
+    // Kill switch is ON - block all traffic
+    await applyKillSwitch(true);
+    await Storage.setProxyEnabled(false);
+    broadcastMessage({
+      action: 'statusUpdate',
+      status: 'blocked',
+      error: details.fatal ? 'Fatal error - Kill switch activated' : 'Connection lost - Kill switch activated'
+    });
+  } else {
+    // Kill switch is OFF - just disconnect and show error
+    await ProxyManager.disconnect();
+    await Storage.setProxyEnabled(false);
+    broadcastMessage({
+      action: 'statusUpdate',
+      status: 'error',
+      error: details.error || 'Proxy connection error'
+    });
+  }
+});
+
+// ============================================
+// Privacy Protection Functions
+// ============================================
+
+/**
+ * Apply WebRTC Leak Protection
+ * @param {boolean} enabled - Whether to enable protection
+ */
+async function applyWebRTCProtection(enabled) {
+  try {
+    const value = enabled ? 'disable_non_proxied_udp' : 'default';
+    await chrome.privacy.network.webRTCIPHandlingPolicy.set({ value });
+    Utils.log('info', `WebRTC protection ${enabled ? 'enabled' : 'disabled'}`, { policy: value });
+    return true;
+  } catch (error) {
+    Utils.log('error', 'Failed to set WebRTC policy', error);
+    return false;
+  }
+}
+
+/**
+ * Apply Kill Switch - blocks all traffic when proxy disconnects unexpectedly
+ * @param {boolean} activate - Whether to activate (block) or deactivate (unblock)
+ */
+async function applyKillSwitch(activate) {
+  try {
+    if (activate) {
+      // Kill switch active: block all traffic by setting invalid proxy
+      const config = {
+        mode: 'fixed_servers',
+        rules: {
+          singleProxy: {
+            scheme: 'socks5',
+            host: '127.0.0.1',  // Localhost with closed port - blocks all traffic
+            port: 65535
+          }
+        }
+      };
+      await chrome.proxy.settings.set({ value: config, scope: 'regular' });
+      await Storage.setValue('killSwitchActive', true);
+      Utils.log('info', 'Kill switch ACTIVATED - all traffic blocked');
+
+      // Update icon to show blocked state
+      try {
+        await chrome.action.setBadgeText({ text: '!' });
+        await chrome.action.setBadgeBackgroundColor({ color: '#e74c3c' });
+      } catch (e) {}
+    } else {
+      // Deactivate kill switch - clear proxy settings
+      await chrome.proxy.settings.clear({ scope: 'regular' });
+      await Storage.setValue('killSwitchActive', false);
+      Utils.log('info', 'Kill switch DEACTIVATED - traffic restored');
+
+      // Clear badge
+      try {
+        await chrome.action.setBadgeText({ text: '' });
+      } catch (e) {}
+    }
+    return true;
+  } catch (error) {
+    Utils.log('error', 'Failed to apply kill switch', error);
+    return false;
+  }
+}
+
+/**
+ * Initialize privacy settings on startup
+ */
+async function initializePrivacySettings() {
+  const webrtcProtection = await Storage.getValue(CONFIG.STORAGE_KEYS.WEBRTC_PROTECTION, true);
+  await applyWebRTCProtection(webrtcProtection);
+  Utils.log('info', 'Privacy settings initialized');
+}
+
+// Initialize privacy settings
+initializePrivacySettings();
+
+// ============================================
+// Proxy Authentication Handler
+// ============================================
+
+/**
+ * Handle proxy authentication requests
+ * This is called when a proxy requires username/password
+ */
+chrome.webRequest.onAuthRequired.addListener(
+  async (details, callback) => {
+    Utils.log('info', 'Proxy authentication required', { challenger: details.challenger });
+
+    // Only handle proxy authentication
+    if (!details.isProxy) {
+      callback({});
+      return;
+    }
+
+    try {
+      // Get stored credentials
+      const customProxy = await Storage.getCustomProxy();
+
+      if (customProxy.username && customProxy.password) {
+        Utils.log('info', 'Providing proxy credentials');
+        callback({
+          authCredentials: {
+            username: customProxy.username,
+            password: customProxy.password
+          }
+        });
+      } else {
+        Utils.log('warn', 'No proxy credentials stored');
+        callback({});
+      }
+    } catch (error) {
+      Utils.log('error', 'Error handling proxy auth', error);
+      callback({});
+    }
+  },
+  { urls: ['<all_urls>'] },
+  ['asyncBlocking']
+);
+
+Utils.log('info', 'Background service worker ready');

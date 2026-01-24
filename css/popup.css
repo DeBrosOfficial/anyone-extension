@@ -1,0 +1,493 @@
+/* ANyONe Extension v2 - Popup Styles */
+
+@import url('common.css');
+
+/* Popup Container */
+html {
+  width: 320px;
+  height: 600px;
+  margin: 0;
+  overflow: hidden;
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  width: 320px;
+  height: 600px;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  scrollbar-width: none;
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+.popup-container {
+  display: flex;
+  flex-direction: column;
+  width: 320px;
+  height: 600px;
+  max-height: 600px;
+  padding: var(--spacing-md);
+  box-sizing: border-box;
+  overflow: hidden !important;
+}
+
+/* Header */
+.popup-header {
+  text-align: center;
+  padding: var(--spacing-sm) 0;
+  margin-bottom: var(--spacing-md);
+}
+
+.logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+}
+
+.logo-img {
+  height: 32px;
+  width: auto;
+  filter: drop-shadow(0 0 12px rgba(3, 189, 197, 0.5));
+}
+
+.logo-subtitle {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* Icons */
+.icon {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+.icon-chevron {
+  width: 16px;
+  height: 16px;
+  color: var(--color-text-muted);
+  transition: transform var(--transition-fast);
+}
+
+/* Status Circle */
+.status-circle {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 3px solid var(--color-error);
+  background: rgba(231, 76, 60, 0.1);
+  transition: all var(--transition-fast);
+}
+
+.status-circle.online {
+  border-color: var(--color-success);
+  background: rgba(2, 175, 80, 0.1);
+  box-shadow: 0 0 12px rgba(2, 175, 80, 0.4);
+}
+
+.status-circle.checking {
+  border-color: var(--color-warning);
+  background: rgba(243, 156, 18, 0.1);
+  animation: pulse-status 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-status {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.7; }
+}
+
+/* Mode Selection */
+.mode-section {
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Mode Content */
+.mode-content {
+  display: none;
+}
+
+.mode-content.active {
+  display: block;
+  margin-bottom: var(--spacing-sm);
+}
+
+.mode-content .card {
+  height: 140px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Proxy Info Card */
+.proxy-info-card {
+  margin-bottom: var(--spacing-sm);
+}
+
+.proxy-info {
+  margin-bottom: var(--spacing-md);
+}
+
+.proxy-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-xs) 0;
+}
+
+.proxy-info-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.proxy-info-value {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.proxy-info-value.muted {
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-normal);
+}
+
+.proxy-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.proxy-actions .btn {
+  flex: 1;
+}
+
+/* Connect Button Section */
+.connect-section {
+  display: flex;
+  justify-content: center;
+  padding: var(--spacing-lg) 0 var(--spacing-sm) 0;
+}
+
+.connect-btn {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: var(--color-bg-tertiary);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-normal);
+  overflow: visible;
+}
+
+.connect-btn-ring {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 3px solid var(--color-border-light);
+  opacity: 0.6;
+  transition: all var(--transition-normal);
+}
+
+.connect-btn-icon {
+  width: 100px;
+  height: 100px;
+  filter: grayscale(100%) brightness(0.6);
+  transition: all var(--transition-normal);
+}
+
+
+.connect-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px rgba(139, 140, 167, 0.3);
+}
+
+.connect-btn:hover .connect-btn-ring {
+  opacity: 1;
+}
+
+/* Connected State */
+.connect-btn.connected {
+  background: rgba(2, 175, 80, 0.1);
+}
+
+.connect-btn.connected .connect-btn-ring {
+  border-color: var(--color-success);
+  box-shadow: 0 0 20px rgba(2, 175, 80, 0.4);
+  opacity: 1;
+}
+
+.connect-btn.connected .connect-btn-icon {
+  filter: grayscale(100%) brightness(0.6) sepia(100%) hue-rotate(70deg) saturate(500%);
+}
+
+.connect-btn.connected:hover {
+  box-shadow: 0 0 40px rgba(2, 175, 80, 0.4);
+}
+
+/* Connecting State */
+.connect-btn.connecting .connect-btn-ring {
+  border-color: var(--color-warning);
+  animation: pulse-ring 1.5s ease-in-out infinite;
+}
+
+.connect-btn.connecting .connect-btn-icon {
+  filter: grayscale(100%) brightness(0.6) sepia(100%) hue-rotate(0deg) saturate(500%);
+  animation: pulse-icon 1.5s ease-in-out infinite;
+}
+
+/* Error State */
+.connect-btn.error .connect-btn-ring {
+  border-color: var(--color-error);
+  box-shadow: 0 0 20px rgba(231, 76, 60, 0.4);
+}
+
+.connect-btn.error .connect-btn-icon {
+  filter: grayscale(100%) brightness(0.5) sepia(100%) hue-rotate(-50deg) saturate(600%);
+}
+
+/* Blocked State (Kill Switch) */
+.connect-btn.blocked {
+  background: rgba(231, 76, 60, 0.15);
+}
+
+.connect-btn.blocked .connect-btn-ring {
+  border-color: var(--color-error);
+  box-shadow: 0 0 20px rgba(231, 76, 60, 0.6);
+  animation: pulse-blocked 1s ease-in-out infinite;
+}
+
+.connect-btn.blocked .connect-btn-icon {
+  filter: grayscale(100%) brightness(0.5) sepia(100%) hue-rotate(-50deg) saturate(600%);
+}
+
+@keyframes pulse-blocked {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 20px rgba(231, 76, 60, 0.6);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(231, 76, 60, 0.8);
+  }
+}
+
+@keyframes pulse-ring {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-icon {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* Status Card */
+.status-card {
+  background: transparent;
+  padding: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+  height: 100px;
+}
+
+.status-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-dot-container {
+  display: none;
+}
+
+.status-dot-container .status-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  margin: 0;
+  transition: all var(--transition-fast);
+}
+
+.status-dot-container .status-dot.online {
+  background: var(--color-success);
+  box-shadow: 0 0 12px rgba(2, 175, 80, 0.6);
+}
+
+.status-dot-container .status-dot.offline {
+  background: var(--color-error);
+  box-shadow: 0 0 8px rgba(231, 76, 60, 0.4);
+}
+
+.status-dot-container .status-dot.connecting {
+  background: var(--color-warning);
+  box-shadow: 0 0 12px rgba(243, 156, 18, 0.6);
+  animation: pulse-dot 1.5s ease-in-out infinite;
+}
+
+.status-dot-container .status-dot.error {
+  background: var(--color-error);
+  box-shadow: 0 0 12px rgba(231, 76, 60, 0.6);
+}
+
+.status-dot-container .status-dot.blocked {
+  background: var(--color-error);
+  box-shadow: 0 0 12px rgba(231, 76, 60, 0.8);
+  animation: pulse-blocked-dot 1s ease-in-out infinite;
+}
+
+@keyframes pulse-blocked-dot {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.7; }
+}
+
+.status-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 2px;
+}
+
+.status-text {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.status-card.error .status-text {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-error);
+}
+
+.status-card.connected .status-text {
+  color: var(--color-success);
+}
+
+.status-card.connecting .status-text {
+  color: var(--color-warning);
+}
+
+.status-card.disconnected .status-text {
+  color: var(--color-text-muted);
+}
+
+.status-card.blocked .status-text {
+  color: var(--color-error);
+  animation: blink-text 1s ease-in-out infinite;
+}
+
+@keyframes blink-text {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.status-ip {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* Custom Form Labels */
+.custom-form .input-label {
+  color: var(--color-text-muted);
+  font-weight: normal;
+}
+
+/* Quick Actions */
+.quick-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) 0;
+}
+
+.quick-action {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--spacing-sm) var(--spacing-xs);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.quick-action:hover {
+  background: var(--color-bg-tertiary);
+  border-color: var(--color-border-light);
+}
+
+.quick-action .icon {
+  width: 18px;
+  height: 18px;
+  color: var(--color-text-secondary);
+  transition: color var(--transition-fast);
+}
+
+.quick-action:hover .icon {
+  color: var(--color-primary);
+}
+
+.quick-action .icon.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.quick-action-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* Custom Proxy Form */
+.custom-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.input-row {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.input-row .input-group {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.input-row .input-group.port {
+  flex: 0 0 80px;
+}

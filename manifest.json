@@ -1,21 +1,30 @@
 {
   "manifest_version": 3,
   "name": "ANyONe Extension",
-  "version": "1.0.5",
-  "description": "Manage Socks5 proxy settings",
+  "version": "2.0.1",
+  "description": "Privacy-focused Socks5 proxy management",
   "permissions": [
     "proxy",
     "storage",
     "tabs",
-    "scripting"
+    "scripting",
+    "privacy",
+    "webRequest",
+    "webRequestAuthProvider"
   ],
   "host_permissions": ["<all_urls>"],
   "background": {
-    "service_worker": "js/background.js"
+    "service_worker": "js/background.js",
+    "type": "module"
   },
   "action": {
     "default_popup": "html/popup.html",
-    "default_title": "Proxy Settings"
+    "default_title": "ANyONe - Privacy Extension",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
   },
   "options_ui": {
     "page": "html/options.html",
