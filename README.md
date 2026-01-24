@@ -145,7 +145,7 @@ Enhance your privacy by using secure DNS servers:
 
 <div align="center">
 
-**Created by [DeBros](https://debros.io)** | **Version 2.0.0**
+**Created by [DeBros](https://debros.io)** | **Version 2.0.1**
 
 [![Support DeBros](https://img.shields.io/badge/Support-DeBros-cyan?style=for-the-badge)](https://debros.io/donate)
 

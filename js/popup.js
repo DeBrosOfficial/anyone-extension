@@ -38,6 +38,7 @@ const elements = {
 
   // Connect button
   btnConnect: document.getElementById('btn-connect'),
+  btnConnectText: document.getElementById('btn-connect-text'),
 
   // Status
   statusCard: document.getElementById('status-card'),
@@ -100,6 +101,7 @@ function setupEventListeners() {
 
   // Connect button
   elements.btnConnect.addEventListener('click', handleConnect);
+  elements.btnConnectText.addEventListener('click', handleConnect);
 
   // Public mode
   elements.btnNextProxy.addEventListener('click', handleNextProxy);
@@ -246,12 +248,7 @@ async function handleNextProxy() {
   elements.statusText.style.color = '';
 
   elements.btnNextProxy.disabled = false;
-  elements.btnNextProxy.innerHTML = `
-    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <polyline points="9 18 15 12 9 6"/>
-    </svg>
-    Next Proxy
-  `;
+  elements.btnNextProxy.textContent = 'Next Proxy';
 
   if (response.success) {
     state.currentProxy = response.proxy;
@@ -375,6 +372,7 @@ async function disconnect() {
 
 function updateConnectionUI() {
   const btn = elements.btnConnect;
+  const btnText = elements.btnConnectText;
   const card = elements.statusCard;
   const dot = elements.statusDot;
   const statusText = elements.statusText;
@@ -396,6 +394,8 @@ function updateConnectionUI() {
     statusText.textContent = 'Connecting...';
     statusIp.style.display = 'none';
     btn.disabled = true;
+    btnText.disabled = true;
+    btnText.textContent = 'Connecting...';
   } else if (state.blocked) {
     // Kill switch is active - traffic blocked
     btn.classList.add('blocked');
@@ -407,12 +407,16 @@ function updateConnectionUI() {
     statusIp.style.display = 'block';
     statusIp.style.color = 'var(--color-warning)';
     btn.disabled = false;
+    btnText.disabled = false;
+    btnText.textContent = 'Connect';
   } else if (state.connected) {
     btn.classList.add('connected');
     card.classList.add('connected');
     dot.classList.add('online');
     statusText.textContent = 'Connected';
     btn.disabled = false;
+    btnText.disabled = false;
+    btnText.textContent = 'Disconnect';
 
     // Show IP
     if (state.currentProxy) {
@@ -425,6 +429,8 @@ function updateConnectionUI() {
     statusText.textContent = 'Disconnected';
     statusIp.style.display = 'none';
     btn.disabled = false;
+    btnText.disabled = false;
+    btnText.textContent = 'Connect';
   }
 }
 
