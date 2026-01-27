@@ -26,7 +26,10 @@ chrome.runtime.onInstalled.addListener(async (details) => {
       [CONFIG.STORAGE_KEYS.PROXY_ENABLED]: false,
       [CONFIG.STORAGE_KEYS.AUTO_CONNECT]: CONFIG.DEFAULTS.AUTO_CONNECT,
       [CONFIG.STORAGE_KEYS.WEBRTC_PROTECTION]: CONFIG.DEFAULTS.WEBRTC_PROTECTION,
-      [CONFIG.STORAGE_KEYS.BYPASS_LOCAL]: CONFIG.DEFAULTS.BYPASS_LOCAL
+      [CONFIG.STORAGE_KEYS.KILL_SWITCH]: CONFIG.DEFAULTS.KILL_SWITCH,
+      [CONFIG.STORAGE_KEYS.BYPASS_LOCAL]: CONFIG.DEFAULTS.BYPASS_LOCAL,
+      [CONFIG.STORAGE_KEYS.PROXY_SOURCE]: CONFIG.DEFAULTS.PROXY_SOURCE,
+      [CONFIG.STORAGE_KEYS.UPDATE_INTERVAL]: CONFIG.DEFAULTS.UPDATE_INTERVAL
     });
 
     // Auto-fetch proxies on first install
@@ -402,6 +405,11 @@ async function handleSaveSettings(settings) {
       }
     }
 
+    // Update proxy list auto-update alarm if changed
+    if (settings.updateInterval !== undefined) {
+      await setupProxyUpdateAlarm(settings.updateInterval);
+    }
+
     // Check if custom proxy connection settings changed (IP, port, credentials)
     const customProxyConnectionChanged =
       settings.proxyIP !== undefined ||
@@ -681,6 +689,53 @@ async function initializePrivacySettings() {
 
 // Initialize privacy settings
 initializePrivacySettings();
+
+// ============================================
+// Proxy List Auto-Update
+// ============================================
+
+const PROXY_UPDATE_ALARM = 'proxyListUpdate';
+
+/**
+ * Setup or clear the proxy list auto-update alarm
+ * @param {number} intervalHours - Update interval in hours (0 = manual/disabled)
+ */
+async function setupProxyUpdateAlarm(intervalHours) {
+  // Clear existing alarm
+  await chrome.alarms.clear(PROXY_UPDATE_ALARM);
+
+  if (intervalHours > 0) {
+    // Create periodic alarm
+    chrome.alarms.create(PROXY_UPDATE_ALARM, {
+      periodInMinutes: intervalHours * 60
+    });
+    Utils.log('info', `Proxy auto-update alarm set for every ${intervalHours} hour(s)`);
+  } else {
+    Utils.log('info', 'Proxy auto-update disabled (manual only)');
+  }
+}
+
+// Handle alarm events
+chrome.alarms.onAlarm.addListener(async (alarm) => {
+  if (alarm.name === PROXY_UPDATE_ALARM) {
+    Utils.log('info', 'Auto-update alarm triggered, fetching proxy list...');
+    try {
+      const source = await Storage.getValue(CONFIG.STORAGE_KEYS.PROXY_SOURCE, CONFIG.DEFAULTS.PROXY_SOURCE);
+      await handleFetchProxies(source);
+      Utils.log('info', 'Proxy list auto-updated successfully');
+    } catch (error) {
+      Utils.log('error', 'Failed to auto-update proxy list', error);
+    }
+  }
+});
+
+// Restore alarm on startup
+async function initializeProxyUpdateAlarm() {
+  const interval = await Storage.getValue(CONFIG.STORAGE_KEYS.UPDATE_INTERVAL, CONFIG.DEFAULTS.UPDATE_INTERVAL);
+  await setupProxyUpdateAlarm(interval);
+}
+
+initializeProxyUpdateAlarm();
 
 // ============================================
 // Proxy Authentication Handler

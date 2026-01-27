@@ -10,7 +10,8 @@
     "scripting",
     "privacy",
     "webRequest",
-    "webRequestAuthProvider"
+    "webRequestAuthProvider",
+    "alarms"
   ],
   "host_permissions": ["<all_urls>"],
   "background": {

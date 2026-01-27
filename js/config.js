@@ -16,6 +16,7 @@ const CONFIG = {
     PROXY_TIMEOUT: 5000,
     AUTO_CONNECT: false,
     WEBRTC_PROTECTION: false,
+    KILL_SWITCH: false,
     BYPASS_LOCAL: true,
     PROXY_SOURCE: 'arweave',
     UPDATE_INTERVAL: 0 // manual only
@@ -70,7 +71,8 @@ const CONFIG = {
     WEBRTC_PROTECTION: 'webrtcProtection',
     KILL_SWITCH: 'killSwitch',
     BYPASS_LOCAL: 'bypassLocal',
-    LAST_UPDATE: 'lastProxyUpdate'
+    LAST_UPDATE: 'lastProxyUpdate',
+    UPDATE_INTERVAL: 'updateInterval'
   }
 };
 
