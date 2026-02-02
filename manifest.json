@@ -7,7 +7,6 @@
     "proxy",
     "storage",
     "tabs",
-    "scripting",
     "privacy",
     "webRequest",
     "webRequestAuthProvider",
