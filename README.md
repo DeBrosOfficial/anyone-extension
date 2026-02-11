@@ -2,6 +2,8 @@
 
 A privacy-focused Chromium browser extension for managing SOCKS5 proxy connections to the ANyONe network.
 
+[![Chrome Web Store](https://img.shields.io/badge/Chrome%20Web%20Store-Available-brightgreen?style=for-the-badge&logo=googlechrome)](https://chromewebstore.google.com/detail/anyone-extension/angaklglppadkbjimfipkpdbcfjppgdp)
+
 ## Features
 
 ### Connection Modes
@@ -43,15 +45,18 @@ A privacy-focused Chromium browser extension for managing SOCKS5 proxy connectio
 
 ## Installation
 
-### Option 1: Clone with Git
+### Option 1: Chrome Web Store (Recommended)
+[![Chrome Web Store](https://img.shields.io/badge/Chrome%20Web%20Store-Install-blue?style=for-the-badge&logo=googlechrome)](https://chromewebstore.google.com/detail/anyone-extension/angaklglppadkbjimfipkpdbcfjppgdp)
+
+### Option 2: Download ZIP (Development)
+[Download ZIP](https://git.debros.io/DeBros/anyone-extension/archive/main.zip)
+
+### Option 3: Clone with Git (Development)
 ```bash
 git clone "https://git.debros.io/DeBros/anyone-extension.git"
 ```
 
-### Option 2: Download ZIP
-[Download ZIP](https://git.debros.io/DeBros/anyone-extension/archive/main.zip)
-
-### Load in Browser
+### Load Unpacked Extension (for Options 2 & 3)
 1. Open your Chromium-based browser (Chrome, Brave, Edge, etc.)
 2. Navigate to `chrome://extensions/`
 3. Enable **Developer mode** (toggle in top right)
